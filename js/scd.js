@@ -141,13 +141,12 @@ var Scd = function(videoEl, options, undefined) {
     var computeDifferences = function(ctxA, ctxB) {
         var colorsA = ctxA.getImageData(0, 0, _step, _step).data;
         var colorsB = ctxB.getImageData(0, 0, _step, _step).data;
-        var length = colorsA.length;
         var diff = [];
-        var i = 0;
+        var i = colorsA.length;
 
-        for(; i < length; i += 4) {
-            diff.push(getColorDistance(colorsA[i], colorsA[i+1], colorsA[i+2], colorsB[i], colorsB[i+1], colorsB[i+2]));
-        }
+        do {
+            diff.push(getColorDistance(colorsA[i-4], colorsA[i+1-4], colorsA[i+2-4], colorsB[i-4], colorsB[i+1-4], colorsB[i+2-4]));
+        } while(i = i - 4);
 
         var avg = getAverage(diff);
         if(_debug) {

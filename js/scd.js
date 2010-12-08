@@ -3,6 +3,26 @@ var Scd = function(videoEl, options) {
     // Contains detected scene changes timecodes.
     this.sceneTimecodes = [];
 
+    // Public methods.
+    this.start = function(callback) {
+		videoSeekedEvent = videoEl.addEventListener("seeked", function() {
+			detectSceneChange();
+		}, false);
+
+        if(callback !== undefined) {
+            _callback = callback;
+        }
+
+        // Remove controls from video during process.
+        videoEl.controls = 0;
+
+        detectSceneChange();
+    };
+
+    this.pause = function() {
+        _stop = 1;
+    };
+
     // Private properties.
     var that = this;
     var document = window.document;
@@ -41,6 +61,8 @@ var Scd = function(videoEl, options) {
 
     var _stop = 0;
     var _callback = 0;
+    var videoOriginalEvent;
+    var videoSeekedEvent;
 
     // Options.
     if(typeof options !== undefined) {
@@ -62,15 +84,8 @@ var Scd = function(videoEl, options) {
     // The number of pixels of resized frames. Used to speed up average calculation.
     var _step_sq = Math.pow(_step, 2);
 
-    // Debug
-    if(_debug) {
-        var _debugContainer = document.createElement("div");
-        _debugContainer.className = "scd-debug";
-        document.getElementsByTagName("body")[0].appendChild(_debugContainer);
-    }
-
     // @todo: Call this function is Scd is instantiated after durationchange was triggered.
-    var videoOriginalEvent = videoEl.addEventListener("durationchange", function() {
+    videoOriginalEvent = videoEl.addEventListener("durationchange", function() {
         // durationchange appears to be the first event triggered by video that exposes width and height.
         _width = this.videoWidth;
         _height = this.videoHeight;
@@ -83,25 +98,12 @@ var Scd = function(videoEl, options) {
 		videoEl.removeEventListener("durationchange", videoOriginalEvent, true);
     }, false);
 
-    videoEl.addEventListener("seeked", function() {
-        detectSceneChange();
-    }, false);
-  
-    // Public methods.
-    this.start = function(callback) {
-        if(callback !== undefined) {
-            _callback = callback;
-        }
-
-        // Remove controls from video during process.
-        videoEl.controls = 0;
-
-        detectSceneChange();
-    };
-
-    this.pause = function() {
-        _stop = 1;
-    };
+    // Debug
+    if(_debug) {
+        var _debugContainer = document.createElement("div");
+        _debugContainer.className = "scd-debug";
+        document.getElementsByTagName("body")[0].appendChild(_debugContainer);
+    }
 
     var detectSceneChange = function() {
         if(_stop) {

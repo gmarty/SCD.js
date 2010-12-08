@@ -1,4 +1,4 @@
-var Scd = function(videoEl, options, undefined) {
+var Scd = function(videoEl, options) {
     // Public properties.
     // Contains detected scene changes timecodes.
     this.sceneTimecodes = [];

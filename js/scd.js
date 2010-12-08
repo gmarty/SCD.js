@@ -5,20 +5,33 @@ var Scd = function(videoEl, options, callback) {
 
     // Public methods.
     this.start = function() {
-		videoSeekedEvent = videoEl.addEventListener("seeked", function() {
-			detectSceneChange();
-		}, false);
+        if(_stop) {
+            return;
+        }
 
         // Remove controls from video during process.
         videoEl.controls = 0;
+        videoEl.currentTime = _currentTime;
+        videoEl.addEventListener("seeked", seekVideo, false);
 
         detectSceneChange();
     };
 
     this.pause = function() {
-        _stop = 1;
-        videoEl.removeEventListener("seeked", videoSeekedEvent, true);
+        if(_stop) {
+            return;
+        }
+
+        videoEl.removeEventListener("seeked", seekVideo, false);
+        
+        // Restore video element controls to its original state.
+        videoEl.controls = _controls;
     };
+
+    this.stop = function() {
+        that.pause();
+        _stop = 1;
+    }
 
     // Private properties.
     var that = this;
@@ -56,9 +69,22 @@ var Scd = function(videoEl, options, callback) {
     var _ctxA = _canvasA.getContext("2d");
     var _ctxB = _canvasB.getContext("2d");
 
-    var _stop = 0;
-    var videoOriginalEvent;
-    var videoSeekedEvent;
+    var _stop;
+    var getVideoData = function() {
+        // durationchange appears to be the first event triggered by video that exposes width and height.
+        _width = this.videoWidth;
+        _height = this.videoHeight;
+        _canvasA.width = _step;
+        _canvasA.height = _step;
+        _canvasB.width = _step;
+        _canvasB.height = _step;
+        //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step, _step);
+
+        videoEl.removeEventListener("durationchange", getVideoData, false);
+    };
+    var seekVideo = function() {
+        detectSceneChange();
+    }
 
     // Options.
     if(typeof options !== undefined) {
@@ -81,18 +107,7 @@ var Scd = function(videoEl, options, callback) {
     var _step_sq = Math.pow(_step, 2);
 
     // @todo: Call this function is Scd is instantiated after durationchange was triggered.
-    videoOriginalEvent = videoEl.addEventListener("durationchange", function() {
-        // durationchange appears to be the first event triggered by video that exposes width and height.
-        _width = this.videoWidth;
-        _height = this.videoHeight;
-        _canvasA.width = _step;
-        _canvasA.height = _step;
-        _canvasB.width = _step;
-        _canvasB.height = _step;
-        //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step, _step);
-
-		videoEl.removeEventListener("durationchange", videoOriginalEvent, true);
-    }, false);
+    videoEl.addEventListener("durationchange", getVideoData, false);
 
     // Debug
     if(_debug) {
@@ -110,10 +125,9 @@ var Scd = function(videoEl, options, callback) {
         if(videoEl.ended || _currentTime > videoEl.duration) {
             if(callback) {
                 callback();
-
-                // Restore video element controls to its original state.
-                videoEl.controls = _controls;
             }
+            that.stop();
+
             return;
         }
 

@@ -20,8 +20,9 @@ div.scd-debug b {
 </style>
 <body>
 <h1>Scene change detection</h1>
-<input type="button" value="Start" onclick="scd.start()">
-<input type="button" value="Stop" onclick="scd.pause()">
+<input type="button" value="Start" id="start">
+<input type="button" value="Pause" id="pause">
+<input type="button" value="Stop" id="stop">
 <video id="video" src="samples/video.ogv" controls></video>
 <div id="scenes">
   <h2>Detected scenes first frame</h2>
@@ -38,6 +39,10 @@ div.scd-debug b {
 var video = document.getElementById("video");
 var scd = new Scd(video, {step: 50, debug: 1}, function(){
     console.log(scd.sceneTimecodes);
+});
+// Attach click events to buttons.
+["start", "pause", "stop"].forEach(function(element) {
+    document.getElementById(element).onclick = scd[element];
 });
 </script>
 </body>

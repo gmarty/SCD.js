@@ -32,6 +32,8 @@ var Scd = function(videoEl, options) {
     var _width = 0;
     var _height = 0;
 
+    var _controls = videoEl.controls;
+
     var _canvasA = document.createElement("canvas");
     var _canvasB = document.createElement("canvas");
     var _ctxA = _canvasA.getContext("2d");
@@ -78,9 +80,6 @@ var Scd = function(videoEl, options) {
         _canvasB.height = _step;
         //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step, _step);
 
-        // @todo: store this in a variable and set it back at the end.
-        this.controls = 0;
-
 		videoEl.removeEventListener("durationchange", videoOriginalEvent, true);
     }, false);
 
@@ -93,9 +92,13 @@ var Scd = function(videoEl, options) {
         if(callback !== undefined) {
             _callback = callback;
         }
+
+        // Remove controls from video during process.
+        videoEl.controls = 0;
+
         detectSceneChange();
     };
-  
+
     this.pause = function() {
         _stop = 1;
     };
@@ -109,6 +112,9 @@ var Scd = function(videoEl, options) {
         if(videoEl.ended || _currentTime > videoEl.duration) {
             if(_callback) {
                 _callback();
+
+                // Restore video element controls to its original state.
+                videoEl.controls = _controls;
             }
             return;
         }

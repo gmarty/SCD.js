@@ -1,7 +1,7 @@
 var Scd = function(videoEl, options, undefined) {
     // Public properties.
     // Contains detected scene changes timecodes.
-    this.scenesTimecodes = [];
+    this.sceneTimecodes = [];
 
     // Private properties.
     var that = this;
@@ -118,7 +118,7 @@ var Scd = function(videoEl, options, undefined) {
         var diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[1] > _threshold) {
-            that.scenesTimecodes.push(videoEl.currentTime);
+            that.sceneTimecodes.push(videoEl.currentTime);
 
             if(_debug) {
                 var tmpContainer = document.createElement("div");

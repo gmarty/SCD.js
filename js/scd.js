@@ -25,8 +25,7 @@ var Scd = function(videoEl, options, undefined) {
      * @const
      * @type {number}
      */
-    //var maxDiff = Math.sqrt(Math.pow(255, 2) * 3);
-    var maxDiff = 441.67;
+    var maxDiff = Math.sqrt(Math.pow(255, 2) * 3);
 
     var _currentTime = 0;
 

@@ -1,17 +1,13 @@
-var Scd = function(videoEl, options) {
+var Scd = function(videoEl, options, callback) {
     // Public properties.
     // Contains detected scene changes timecodes.
     this.sceneTimecodes = [];
 
     // Public methods.
-    this.start = function(callback) {
+    this.start = function() {
 		videoSeekedEvent = videoEl.addEventListener("seeked", function() {
 			detectSceneChange();
 		}, false);
-
-        if(callback !== undefined) {
-            _callback = callback;
-        }
 
         // Remove controls from video during process.
         videoEl.controls = 0;
@@ -21,6 +17,7 @@ var Scd = function(videoEl, options) {
 
     this.pause = function() {
         _stop = 1;
+        videoEl.removeEventListener("seeked", videoSeekedEvent, true);
     };
 
     // Private properties.
@@ -60,7 +57,6 @@ var Scd = function(videoEl, options) {
     var _ctxB = _canvasB.getContext("2d");
 
     var _stop = 0;
-    var _callback = 0;
     var videoOriginalEvent;
     var videoSeekedEvent;
 
@@ -112,8 +108,8 @@ var Scd = function(videoEl, options) {
 
         // @fixme: Bug on Opera. duration is not always defined.
         if(videoEl.ended || _currentTime > videoEl.duration) {
-            if(_callback) {
-                _callback();
+            if(callback) {
+                callback();
 
                 // Restore video element controls to its original state.
                 videoEl.controls = _controls;

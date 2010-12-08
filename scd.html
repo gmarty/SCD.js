@@ -20,9 +20,9 @@ div.scd-debug b {
 </style>
 <body>
 <h1>Scene change detection</h1>
-<input type="button" value="Start" onclick="detectSceneChange()">
+<input type="button" value="Start" onclick="scd.start()">
 <input type="button" value="Stop" onclick="scd.pause()">
-<video id="video" src="samples/video.ogv"></video>
+<video id="video" src="samples/video.ogv" controls></video>
 <div id="scenes">
   <h2>Detected scenes first frame</h2>
 </div>
@@ -36,13 +36,9 @@ div.scd-debug b {
  * - Calculer la moyenne globale des changements et utiliser ce coefficient pour pondérer scd.threshold (corrige différences navigateurs).
  */
 var video = document.getElementById("video");
-var scd = new Scd(video, {step: 50, debug: 1});
-
-function detectSceneChange() {
-  scd.start(function(){
+var scd = new Scd(video, {step: 50, debug: 1}, function(){
     console.log(scd.sceneTimecodes);
-  });
-}
+});
 </script>
 </body>
 </html>

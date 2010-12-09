@@ -135,7 +135,7 @@ var Scd = function(videoEl, options, callback) {
         var diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[1] > _threshold) {
-            that.sceneTimecodes.push(videoEl.currentTime);
+            that.sceneTimecodes.push(_currentTime);
 
             if(_debug) {
                 var tmpContainer = document.createElement("div");

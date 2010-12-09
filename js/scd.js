@@ -145,7 +145,7 @@ var Scd = function(videoEl, options, callback) {
                 tmpCanvasA.getContext("2d").drawImage(videoEl, 0, 0, _width, _height, 0, 0, _width / 2, _height / 2);
                 tmpContainer.appendChild(tmpCanvasA);
                 tmpContainer.appendChild(document.createElement("br"));
-                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[0] / maxDiff * 100) + "%, avg: " + Math.round(diff[1] / maxDiff * 100) + "%, min: " + Math.round(diff[2] / maxDiff * 100) + "%"));
+                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[0] / maxDiff * 100) + "%, avg: " + Math.round(diff[1] / maxDiff * 100) + "%, med: " + Math.round(diff[2] / maxDiff * 100) + "%, min: " + Math.round(diff[3] / maxDiff * 100) + "%"));
                 _debugContainer.appendChild(tmpContainer);
             }
         }
@@ -169,7 +169,8 @@ var Scd = function(videoEl, options, callback) {
         if(_debug) {
             var max = getMaxOfArray(diff);
             var min = getMinOfArray(diff);
-            return [max, avg, min];
+            var med = getMedian(diff);
+            return [max, avg, med, min];
         }else {
             return ["0", avg];
         }
@@ -216,5 +217,29 @@ var Scd = function(videoEl, options, callback) {
         return numArray.reduce(function(a, b) {
             return a + b;
         }) / _step_sq;
+    };
+
+    /**
+     * Calculates the median value of an array.
+     * @param {Array.<number>} numArray An array of values.
+     * @return {number} The median value.
+     */
+    var getMedian = (_step_sq % 2) ? function(numArray) {
+        numArray.sort(compare);
+        return numArray[((_step_sq + 1) / 2) - 1];
+    } : function(numArray) {
+        numArray.sort(compare);
+        var middle = (_step_sq + 1) / 2;
+        return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
+    };
+
+    /**
+     * Comparison function for Array.sort() used in getMedian().
+     * @param {<number>} a The first value to compare.
+     * @param {<number>} b The second value to compare.
+     * @return {number} The difference between a and b.
+     */
+    var compare = function(a, b) {
+        return a - b;
     };
 };

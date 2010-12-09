@@ -12,7 +12,7 @@ var Scd = function(videoEl, options, callback) {
         // Remove controls from video during process.
         videoEl.controls = 0;
         videoEl.currentTime = _currentTime;
-        videoEl.addEventListener("seeked", seekVideo, false);
+        videoEl.addEventListener("seeked", detectSceneChange, false);
 
         detectSceneChange();
     };
@@ -22,7 +22,7 @@ var Scd = function(videoEl, options, callback) {
             return;
         }
 
-        videoEl.removeEventListener("seeked", seekVideo, false);
+        videoEl.removeEventListener("seeked", detectSceneChange, false);
         
         // Restore video element controls to its original state.
         videoEl.controls = _controls;
@@ -56,6 +56,7 @@ var Scd = function(videoEl, options, callback) {
      * @type {number}
      */
     var maxDiff = Math.sqrt(Math.pow(255, 2) * 3);
+	var maxDiff100;
 
     var _currentTime = 0;
 
@@ -70,6 +71,8 @@ var Scd = function(videoEl, options, callback) {
     var _ctxB = _canvasB.getContext("2d");
 
     var _stop;
+    var _step_sq;
+    var _debugContainer;
     var getVideoData = function() {
         // durationchange appears to be the first event triggered by video that exposes width and height.
         _width = this.videoWidth;
@@ -82,38 +85,52 @@ var Scd = function(videoEl, options, callback) {
 
         videoEl.removeEventListener("durationchange", getVideoData, false);
     };
-    var seekVideo = function() {
-        detectSceneChange();
-    }
 
-    // Options.
-    if(typeof options !== undefined) {
-        if(options.step) {
-            _step = parseInt(options.step, 10);
-        }
-        if(options.minSceneDuration) {
-            _minSceneDuration = parseFloat(options.minSceneDuration);
-        }
-        if(options.threshold) {
-            _threshold = parseFloat(options.threshold);
-        }
-        if(options.debug) {
-            _debug = Boolean(options.debug);
-        }
-    }
-    // _threshold is set between 0 and maxDiff interval to save calculations later.
-    _threshold = _threshold * maxDiff / 100;
-    // The number of pixels of resized frames. Used to speed up average calculation.
-    var _step_sq = Math.pow(_step, 2);
+    var init = function() {
+		// Options.
+		if(typeof options !== undefined) {
+			if(options.step) {
+				_step = parseInt(options.step, 10);
+			}
+			if(options.minSceneDuration) {
+				_minSceneDuration = parseFloat(options.minSceneDuration);
+			}
+			if(options.threshold) {
+				_threshold = parseFloat(options.threshold);
+			}
+			if(options.debug) {
+				_debug = Boolean(options.debug);
+			}
+		}
+		// _threshold is set between 0 and maxDiff interval to save calculations later.
+		_threshold = _threshold * maxDiff / 100;
+		// The number of pixels of resized frames. Used to speed up average calculation.
+		_step_sq = Math.pow(_step, 2);
 
-    // @todo: Call this function is Scd is instantiated after durationchange was triggered.
-    videoEl.addEventListener("durationchange", getVideoData, false);
+		// Debug
+		if(_debug) {
+			maxDiff100 = maxDiff / 100;
+			_debugContainer = document.createElement("div");
+			_debugContainer.className = "scd-debug";
+			document.getElementsByTagName("body")[0].appendChild(_debugContainer);
+		}
 
-    // Debug
-    if(_debug) {
-        var _debugContainer = document.createElement("div");
-        _debugContainer.className = "scd-debug";
-        document.getElementsByTagName("body")[0].appendChild(_debugContainer);
+		// @todo: Call this function is Scd is instantiated after durationchange was triggered.
+		videoEl.addEventListener("durationchange", getVideoData, false);
+
+		/**
+		 * Calculates the median value of an array.
+		 * @param {Array.<number>} numArray An array of values.
+		 * @return {number} The median value.
+		 */
+		getMedian = (_step_sq % 2) ? function(numArray) {
+			numArray.sort(compare);
+			return numArray[((_step_sq + 1) / 2) - 1];
+		} : function(numArray) {
+			numArray.sort(compare);
+			var middle = (_step_sq + 1) / 2;
+			return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
+		};
     }
 
     var detectSceneChange = function() {
@@ -134,18 +151,17 @@ var Scd = function(videoEl, options, callback) {
         _ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step, _step);
         var diff = computeDifferences(_ctxA, _ctxB);
 
-        if(diff[1] > _threshold) {
+        if(diff[0] > _threshold) {
             that.sceneTimecodes.push(_currentTime);
-
             if(_debug) {
                 var tmpContainer = document.createElement("div");
                 var tmpCanvasA = document.createElement("canvas");
-                tmpCanvasA.width = _width / 2;
-                tmpCanvasA.height = _height / 2;
-                tmpCanvasA.getContext("2d").drawImage(videoEl, 0, 0, _width, _height, 0, 0, _width / 2, _height / 2);
+                var half_width = tmpCanvasA.width = _width / 2;
+                var half_height = tmpCanvasA.height = _height / 2;
+                tmpCanvasA.getContext("2d").drawImage(videoEl, 0, 0, _width, _height, 0, 0, half_width, half_height);
                 tmpContainer.appendChild(tmpCanvasA);
                 tmpContainer.appendChild(document.createElement("br"));
-                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[0] / maxDiff * 100) + "%, avg: " + Math.round(diff[1] / maxDiff * 100) + "%, med: " + Math.round(diff[2] / maxDiff * 100) + "%, min: " + Math.round(diff[3] / maxDiff * 100) + "%"));
+                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[2] / maxDiff100) + "%, avg: " + Math.round(diff[0] / maxDiff100) + "%, med: " + Math.round(diff[1] / maxDiff100) + "%, min: " + Math.round(diff[3] / maxDiff100) + "%"));
                 _debugContainer.appendChild(tmpContainer);
             }
         }
@@ -160,19 +176,25 @@ var Scd = function(videoEl, options, callback) {
         var colorsB = ctxB.getImageData(0, 0, _step, _step).data;
         var diff = [];
         var i = colorsA.length;
+        var max;
+        var avg;
+        var med;
+        var min;
 
         do {
             diff.push(getColorDistance(colorsA[i-4], colorsA[i+1-4], colorsA[i+2-4], colorsB[i-4], colorsB[i+1-4], colorsB[i+2-4]));
         } while(i = i - 4);
 
-        var avg = getAverage(diff);
+        avg = getAverage(diff);
         if(_debug) {
-            var max = getMaxOfArray(diff);
-            var min = getMinOfArray(diff);
-            var med = getMedian(diff);
-            return [max, avg, med, min];
+			// When debug is on, full data are computed and returned...
+            max = getMaxOfArray(diff);
+            min = getMinOfArray(diff);
+            med = getMedian(diff);
+            return [avg, med, max, min];
         }else {
-            return ["0", avg];
+			// Otherwise, only the average difference value is returned.
+            return [avg];
         }
     };
 
@@ -219,27 +241,17 @@ var Scd = function(videoEl, options, callback) {
         }) / _step_sq;
     };
 
-    /**
-     * Calculates the median value of an array.
-     * @param {Array.<number>} numArray An array of values.
-     * @return {number} The median value.
-     */
-    var getMedian = (_step_sq % 2) ? function(numArray) {
-        numArray.sort(compare);
-        return numArray[((_step_sq + 1) / 2) - 1];
-    } : function(numArray) {
-        numArray.sort(compare);
-        var middle = (_step_sq + 1) / 2;
-        return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
-    };
+    var getMedian;
 
     /**
      * Comparison function for Array.sort() used in getMedian().
-     * @param {<number>} a The first value to compare.
-     * @param {<number>} b The second value to compare.
+     * @param {number} a The first value to compare.
+     * @param {number} b The second value to compare.
      * @return {number} The difference between a and b.
      */
     var compare = function(a, b) {
         return a - b;
     };
+    
+    init();
 };

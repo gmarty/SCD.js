@@ -37,7 +37,11 @@ div.scd-debug b {
  * - Calculer la moyenne globale des changements et utiliser ce coefficient pour pondérer scd.threshold (corrige différences navigateurs).
  */
 var video = document.getElementById("video");
-var scd = new Scd(video, {step: 50, debug: 1}, function(){
+var scd = new Scd(video, {
+		mode: 'PlaybackMode',
+		step: 50,
+		debug: 1
+	}, function(){
     console.log(scd.sceneTimecodes);
 });
 // Attach click events to buttons.

@@ -4,39 +4,39 @@ var Scd = function(videoEl, options, callback) {
     this.sceneTimecodes = [];
 
     // Public methods.
-    this.start = function() {
-        if(_stop) {
-            return;
-        }
-
-        // Remove controls from video during process.
-        videoEl.controls = 0;
-        videoEl.currentTime = _currentTime;
-        videoEl.addEventListener("seeked", detectSceneChange, false);
-
-        detectSceneChange();
-    };
+    this.start;
 
     this.pause = function() {
         if(_stop) {
             return;
         }
 
-        videoEl.removeEventListener("seeked", detectSceneChange, false);
-        
-        // Restore video element controls to its original state.
-        videoEl.controls = _controls;
+        if(_mode == "FastForwardMode") {
+            videoEl.removeEventListener("seeked", FastForwardModeEvent, false);
+            // Restore video element controls to its original state.
+            videoEl.controls = _controls;
+        }
+        videoEl.pause();
     };
 
     this.stop = function() {
         that.pause();
+
+        if(_mode == "FastForwardMode") {
+            // Restore video element controls to its original state.
+            videoEl.controls = _controls;
+        }
+
         _stop = 1;
-    }
+    };
 
     // Private properties.
     var that = this;
     var document = window.document;
     var Math = window.Math;
+
+    // Default mode is FastForward. Playback mode is used on browser that don't support setting current playback time to sub seconds (e.g. Opera).
+    var _mode = "FastForwardMode";
 
     // The width and height at which the frames will be resized down to for comparison.
     var _step = 50;
@@ -56,9 +56,10 @@ var Scd = function(videoEl, options, callback) {
      * @type {number}
      */
     var maxDiff = Math.sqrt(Math.pow(255, 2) * 3);
-	var maxDiff100;
+    var maxDiff100;
 
     var _currentTime = 0;
+    var _lastCurrentTime = 0;    // Used in PlaybackMode only.
 
     var _width = 0;
     var _height = 0;
@@ -86,52 +87,105 @@ var Scd = function(videoEl, options, callback) {
         videoEl.removeEventListener("durationchange", getVideoData, false);
     };
 
+    /**
+     * @constructor
+     */
     var init = function() {
-		// Options.
-		if(typeof options !== undefined) {
-			if(options.step) {
-				_step = parseInt(options.step, 10);
-			}
-			if(options.minSceneDuration) {
-				_minSceneDuration = parseFloat(options.minSceneDuration);
-			}
-			if(options.threshold) {
-				_threshold = parseFloat(options.threshold);
-			}
-			if(options.debug) {
-				_debug = Boolean(options.debug);
-			}
-		}
-		// _threshold is set between 0 and maxDiff interval to save calculations later.
-		_threshold = _threshold * maxDiff / 100;
-		// The number of pixels of resized frames. Used to speed up average calculation.
-		_step_sq = Math.pow(_step, 2);
+        // Options.
+        if(typeof options !== undefined) {
+            if(options.mode && options.mode == "PlaybackMode") {
+                _mode = options.mode;
+            }
+            if(options.step) {
+                _step = parseInt(options.step, 10);
+            }
+            if(options.minSceneDuration) {
+                _minSceneDuration = parseFloat(options.minSceneDuration);
+            }
+            if(options.threshold) {
+                _threshold = parseFloat(options.threshold);
+            }
+            if(options.debug) {
+                _debug = Boolean(options.debug);
+            }
+            _lastCurrentTime = _minSceneDuration;
+        }
+        // _threshold is set between 0 and maxDiff interval to save calculations later.
+        _threshold = _threshold * maxDiff / 100;
+        // The number of pixels of resized frames. Used to speed up average calculation.
+        _step_sq = Math.pow(_step, 2);
 
-		// Debug
-		if(_debug) {
-			maxDiff100 = maxDiff / 100;
-			_debugContainer = document.createElement("div");
-			_debugContainer.className = "scd-debug";
-			document.getElementsByTagName("body")[0].appendChild(_debugContainer);
-		}
+        // Debug
+        if(_debug) {
+            maxDiff100 = maxDiff / 100;
+            _debugContainer = document.createElement("div");
+            _debugContainer.className = "scd-debug";
+            document.getElementsByTagName("body")[0].appendChild(_debugContainer);
+        }
 
-		// @todo: Call this function is Scd is instantiated after durationchange was triggered.
-		videoEl.addEventListener("durationchange", getVideoData, false);
+        // @todo: Call this function is Scd is instantiated after durationchange was triggered.
+        videoEl.addEventListener("durationchange", getVideoData, false);
 
-		/**
-		 * Calculates the median value of an array.
-		 * @param {Array.<number>} numArray An array of values.
-		 * @return {number} The median value.
-		 */
-		getMedian = (_step_sq % 2) ? function(numArray) {
-			numArray.sort(compare);
-			return numArray[((_step_sq + 1) / 2) - 1];
-		} : function(numArray) {
-			numArray.sort(compare);
-			var middle = (_step_sq + 1) / 2;
-			return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
-		};
+        that.start = (_mode == "FastForwardMode") ? function() {
+            // Fast forward mode.
+            if(_stop) {
+                return;
+            }
+
+            // Remove controls from video during process.
+            videoEl.controls = 0;
+
+            videoEl.currentTime = _currentTime;
+            videoEl.addEventListener("seeked", fastForwardModeEvent, false);
+
+            detectSceneChange();
+        } : function() {
+            // Playback mode.
+            if(_stop) {
+                return;
+            }
+
+            // Remove controls from video during process.
+            videoEl.controls = 0;
+
+            videoEl.currentTime = 0;
+            videoEl.addEventListener("timeupdate", playbackModeEvent, false);
+
+            videoEl.play();
+        };
+
+        /**
+         * Calculates the median value of an array.
+         * @param {Array.<number>} numArray An array of values.
+         * @return {number} The median value.
+         * @private
+         */
+        getMedian = (_step_sq % 2) ? function(numArray) {
+            numArray.sort(compare);
+            return numArray[((_step_sq + 1) / 2) - 1];
+        } : function(numArray) {
+            numArray.sort(compare);
+            var middle = (_step_sq + 1) / 2;
+            return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
+        };
     }
+
+    // Triggered by seeked event on FastForwardMode.
+    var fastForwardModeEvent = function() {
+        detectSceneChange();
+
+        _currentTime += _minSceneDuration;
+        videoEl.currentTime = _currentTime;
+    };
+
+    // Triggered by timeupdate event on PlaybackMode.
+    var playbackModeEvent = function() {
+        if(video.currentTime - _lastCurrentTime >= _minSceneDuration) {
+            detectSceneChange();
+
+            _lastCurrentTime = video.currentTime;
+        }
+    };
 
     var detectSceneChange = function() {
         if(_stop) {
@@ -167,8 +221,6 @@ var Scd = function(videoEl, options, callback) {
         }
 
         _ctxB.drawImage(_canvasA, 0, 0, _step, _step, 0, 0, _step, _step);
-        _currentTime += _minSceneDuration;
-        videoEl.currentTime = _currentTime;
     };
 
     var computeDifferences = function(ctxA, ctxB) {
@@ -187,13 +239,13 @@ var Scd = function(videoEl, options, callback) {
 
         avg = getAverage(diff);
         if(_debug) {
-			// When debug is on, full data are computed and returned...
+            // When debug is on, full data are computed and returned...
             max = getMaxOfArray(diff);
             min = getMinOfArray(diff);
             med = getMedian(diff);
             return [avg, med, max, min];
         }else {
-			// Otherwise, only the average difference value is returned.
+            // Otherwise, only the average difference value is returned.
             return [avg];
         }
     };

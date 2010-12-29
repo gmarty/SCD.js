@@ -1,7 +1,8 @@
 /**
+ * Perform a scene change detection process on a video tag.
  * @param {Element} videoEl The video element to process.
  * @param {Array.<string, *>} options An array of options.
- * @param {Function} callback The callback function executed when process is complete.
+ * @param {function(): Array} callback The callback function executed when process is complete.
  */
 var Scd = function(videoEl, options, callback) {
     /**
@@ -16,7 +17,7 @@ var Scd = function(videoEl, options, callback) {
     this.start = function(){};
 
     /**
-     * Temporary halt the scene detection process.
+     * Temporary halt the scene detection process. Use Scd.start() again to resume process.
      */
     this.pause = function() {
         if(_stop) {

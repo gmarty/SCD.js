@@ -1,24 +1,38 @@
+/**
+ * @param {Element} videoEl The video element to process.
+ * @param {Array.<string, *>} options An array of options.
+ * @param {Function} callback The callback function executed when process is complete.
 var Scd = function(videoEl, options, callback) {
-    // Public properties.
-    // Contains detected scene changes timecodes.
+    /**
+     * Contains detected scene changes timecodes.
+     * @type {Array.<number>}
+     */
     this.sceneTimecodes = [];
 
-    // Public methods.
-    this.start;
+    /**
+     * Launch the scene detection process.
+     */
+    this.start = function(){};
 
+    /**
+     * Temporary halt the scene detection process.
+     */
     this.pause = function() {
         if(_stop) {
             return;
         }
 
         if(_mode == "FastForwardMode") {
-            videoEl.removeEventListener("seeked", FastForwardModeEvent, false);
+            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
             // Restore video element controls to its original state.
             videoEl.controls = _controls;
         }
         videoEl.pause();
     };
 
+    /**
+     * Cancel the scene detection process.
+     */
     this.stop = function() {
         that.pause();
 
@@ -31,49 +45,143 @@ var Scd = function(videoEl, options, callback) {
     };
 
     // Private properties.
-    var that = this;
-    var document = window.document;
-    var Math = window.Math;
+    /** @private */ var that = this;
+    /** @private */ var document = window.document;
+    /** @private */ var Math = window.Math;
 
-    // Default mode is FastForward. Playback mode is used on browser that don't support setting current playback time to sub seconds (e.g. Opera).
+    /**
+     * Default mode is FastForward. Playback mode is used on browsers that don't support setting current playback time to sub seconds (e.g. Opera).
+     * @type {string}
+     * @private
+     */
     var _mode = "FastForwardMode";
 
-    // The width and height at which the frames will be resized down to for comparison.
+    /**
+     * The width and height at which the frames will be resized down to for comparison.
+     * @type {number}
+     * @private
+     */
     var _step = 50;
 
-    // The minimal duration of a scene in s. 2 consecutive scene changes can be detected within this interval.
+    /**
+     * The minimal duration of a scene in s. 2 consecutive scene changes can be detected within this interval.
+     * @type {number}
+     * @private
+     */
     var _minSceneDuration = 0.25;
 
-    // Percentage color difference above which a scene change is detected (0 <= threshold <= 100).
+    /**
+     * Percentage color difference above which a scene change is detected (0 <= threshold <= 100).
+     * @type {number}
+     * @private
+     */
     var _threshold = 25;
 
-    // Display detected scenes first frame.
+    /**
+     * Display detected scenes first frame.
+     * @type {boolean}
+     * @private
+     */
     var _debug = 0;
-  
+
     /**
      * Maximum color difference possible.
      * @const
      * @type {number}
      */
     var maxDiff = Math.sqrt(Math.pow(255, 2) * 3);
-    var maxDiff100;
 
+    /**
+     * Maximum color difference possible / 100. Used to speed up calculations on debug.
+     * @const
+     * @type {number}
+     */
+    var maxDiff100 = maxDiff / 100;
+
+    /**
+     * Current playback time.
+     * @type {number}
+     * @private
+     */
     var _currentTime = 0;
-    var _lastCurrentTime = 0;    // Used in PlaybackMode only.
 
+    /**
+     * Last current playback time. Used in "PlaybackMode" only.
+     * @type {number}
+     * @private
+     */
+    var _lastCurrentTime = 0;
+
+	/**
+	 * Video width.
+     * @type {number}
+     * @private
+     */
     var _width = 0;
+
+	/**
+	 * Video height.
+     * @type {number}
+     * @private
+     */
     var _height = 0;
 
+	/**
+	 * Initial state of controls attribute of the video tag.
+     * @type {boolean}
+     * @private
+     */
     var _controls = videoEl.controls;
 
+    /**
+     * Canvas element of image 1.
+     * @type {Element}
+     * @private
+     */
     var _canvasA = document.createElement("canvas");
+
+    /**
+     * Canvas element of image 2.
+     * @type {Element}
+     * @private
+     */
     var _canvasB = document.createElement("canvas");
+
+    /**
+     * Canvas context for image 1.
+     * @type {Object}
+     * @private
+     */
     var _ctxA = _canvasA.getContext("2d");
+
+    /**
+     * Canvas context for image 2.
+     * @type {Object}
+     * @private
+     */
     var _ctxB = _canvasB.getContext("2d");
 
+    /**
+     * Determine if current scene change detection process is stopped.
+     * @type {boolean}
+     * @private
+     */
     var _stop;
+
+    /**
+     * The total number of zones in the video to process. Used to speed up calculation.
+     * @const
+     * @type {number}
+     * @private
+     */
     var _step_sq;
     var _debugContainer;
+
+    /**
+     * Expose data about the video when available.
+     * @this {Element}
+     * @private
+     */
     var getVideoData = function() {
         // durationchange appears to be the first event triggered by video that exposes width and height.
         _width = this.videoWidth;
@@ -117,7 +225,6 @@ var Scd = function(videoEl, options, callback) {
 
         // Debug
         if(_debug) {
-            maxDiff100 = maxDiff / 100;
             _debugContainer = document.createElement("div");
             _debugContainer.className = "scd-debug";
             document.getElementsByTagName("body")[0].appendChild(_debugContainer);
@@ -170,7 +277,10 @@ var Scd = function(videoEl, options, callback) {
         };
     }
 
-    // Triggered by seeked event on FastForwardMode.
+    /**
+     * Function triggered by seeked event on FastForwardMode.
+     * @private
+     */
     var fastForwardModeEvent = function() {
         detectSceneChange();
 
@@ -178,7 +288,10 @@ var Scd = function(videoEl, options, callback) {
         videoEl.currentTime = _currentTime;
     };
 
-    // Triggered by timeupdate event on PlaybackMode.
+    /**
+     * Function triggered by timeupdate event on PlaybackMode.
+     * @private
+     */
     var playbackModeEvent = function() {
         if(video.currentTime - _lastCurrentTime >= _minSceneDuration) {
             detectSceneChange();
@@ -187,6 +300,10 @@ var Scd = function(videoEl, options, callback) {
         }
     };
 
+    /**
+     * Determine if a scene change occurred between last and current playback time.
+     * @private
+     */
     var detectSceneChange = function() {
         if(_stop) {
             return;
@@ -223,6 +340,14 @@ var Scd = function(videoEl, options, callback) {
         _ctxB.drawImage(_canvasA, 0, 0, _step, _step, 0, 0, _step, _step);
     };
 
+    /**
+     * Return various statistics about zone differences of 2 frames.
+     * Debug mode computes and returns more data.
+     * @param {Object} ctxA The canvas context of image 1.
+     * @param {Object} ctxB The canvas context of image 2.
+     * @return {Array.<number>} Various statistics about input image differences.
+     * @private
+     */
     var computeDifferences = function(ctxA, ctxB) {
         var colorsA = ctxA.getImageData(0, 0, _step, _step).data;
         var colorsB = ctxB.getImageData(0, 0, _step, _step).data;
@@ -304,6 +429,6 @@ var Scd = function(videoEl, options, callback) {
     var compare = function(a, b) {
         return a - b;
     };
-    
+
     init();
 };

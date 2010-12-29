@@ -2,6 +2,7 @@
  * @param {Element} videoEl The video element to process.
  * @param {Array.<string, *>} options An array of options.
  * @param {Function} callback The callback function executed when process is complete.
+ */
 var Scd = function(videoEl, options, callback) {
     /**
      * Contains detected scene changes timecodes.

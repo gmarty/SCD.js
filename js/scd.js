@@ -174,6 +174,12 @@ var Scd = function(videoEl, options, callback) {
      * @private
      */
     var _step_sq;
+
+    /**
+     * The div element to write debug into.
+     * @type {Element}
+     * @private
+     */
     var _debugContainer;
 
     /**

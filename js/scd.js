@@ -1,25 +1,22 @@
 /**
  * Perform a scene change detection process on a video tag.
+ * @constructor
  * @param {Element} videoEl The video element to process.
- * @param {Array.<string, *>} options An array of options.
- * @param {function(): Array} callback The callback function executed when process is complete.
+ * @param {Object.<string, *>} options An array of options.
+ * @param {function()} callback The callback function executed when process is complete.
  */
 var Scd = function(videoEl, options, callback) {
     /**
      * Contains detected scene changes timecodes.
      * @type {Array.<number>}
      */
-    this.sceneTimecodes = [];
-
-    /**
-     * Launch the scene detection process.
-     */
-    this.start = function(){};
+    Scd.prototype.sceneTimecodes = [];
+    
 
     /**
      * Temporary halt the scene detection process. Use Scd.start() again to resume process.
      */
-    this.pause = function() {
+    Scd.prototype.pause = function() {
         if(_stop) {
             return;
         }
@@ -35,7 +32,7 @@ var Scd = function(videoEl, options, callback) {
     /**
      * Cancel the scene detection process.
      */
-    this.stop = function() {
+    Scd.prototype.stop = function() {
         that.pause();
 
         if(_mode == "FastForwardMode") {
@@ -43,7 +40,7 @@ var Scd = function(videoEl, options, callback) {
             videoEl.controls = _controls;
         }
 
-        _stop = 1;
+        _stop = true;
     };
 
     // Private properties.
@@ -84,7 +81,7 @@ var Scd = function(videoEl, options, callback) {
      * @type {boolean}
      * @private
      */
-    var _debug = 0;
+    var _debug = false;
 
     /**
      * Maximum color difference possible.
@@ -114,22 +111,22 @@ var Scd = function(videoEl, options, callback) {
      */
     var _lastCurrentTime = 0;
 
-	/**
-	 * Video width.
+    /**
+     * Video width.
      * @type {number}
      * @private
      */
     var _width = 0;
 
-	/**
-	 * Video height.
+    /**
+     * Video height.
      * @type {number}
      * @private
      */
     var _height = 0;
 
-	/**
-	 * Initial state of controls attribute of the video tag.
+    /**
+     * Initial state of controls attribute of the video tag.
      * @type {boolean}
      * @private
      */
@@ -168,7 +165,7 @@ var Scd = function(videoEl, options, callback) {
      * @type {boolean}
      * @private
      */
-    var _stop;
+    var _stop = false;
 
     /**
      * The total number of zones in the video to process. Used to speed up calculation.
@@ -198,7 +195,7 @@ var Scd = function(videoEl, options, callback) {
     };
 
     /**
-     * @constructor
+     * Initialize values.
      */
     var init = function() {
         // Options.
@@ -235,7 +232,10 @@ var Scd = function(videoEl, options, callback) {
         // @todo: Call this function is Scd is instantiated after durationchange was triggered.
         videoEl.addEventListener("durationchange", getVideoData, false);
 
-        that.start = (_mode == "FastForwardMode") ? function() {
+        /**
+         * Launch the scene detection process.
+         */
+        Scd.prototype.start = (_mode == "FastForwardMode") ? function() {
             // Fast forward mode.
             if(_stop) {
                 return;

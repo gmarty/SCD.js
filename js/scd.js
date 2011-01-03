@@ -133,18 +133,27 @@ var Scd = function(videoEl, options, callback) {
     var _controls = videoEl.controls;
 
     /**
+     * Create a new canvas element.
+     * @return {HTMLCanvasElement} A new canvas element created.
+     * @private
+     */
+    var createCanvas = function() {
+        return document.createElement("canvas");
+    }
+
+    /**
      * Canvas element of image 1.
      * @type {HTMLCanvasElement}
      * @private
      */
-    var _canvasA = document.createElement("canvas");
+    var _canvasA = createCanvas();
 
     /**
      * Canvas element of image 2.
      * @type {HTMLCanvasElement}
      * @private
      */
-    var _canvasB = document.createElement("canvas");
+    var _canvasB = createCanvas();
 
     /**
      * Canvas context for image 1.
@@ -205,28 +214,33 @@ var Scd = function(videoEl, options, callback) {
      */
     var init = function() {
         // Options.
-        if(typeof options !== undefined) {
-            if(options.mode && options.mode == "PlaybackMode") {
-                _mode = options.mode;
+        if(options) {
+            var optMode = options['mode'],
+                optStep = options['step'],
+                optMinSceneDuration = options['minSceneDuration'],
+                optThreshold = options['threshold'],
+                optDebug = options['debug'];
+            if(optMode && optMode == "PlaybackMode") {
+                _mode = optMode;
             }
-            if(options.step) {
-                _step = parseInt(options.step, 10);
+            if(optStep) {
+                _step = parseInt(optStep, 10);
             }
-            if(options.minSceneDuration) {
-                _minSceneDuration = parseFloat(options.minSceneDuration);
+            if(optMinSceneDuration) {
+                _minSceneDuration = parseFloat(optMinSceneDuration);
             }
-            if(options.threshold) {
-                _threshold = parseFloat(options.threshold);
+            if(optThreshold) {
+                _threshold = parseFloat(optThreshold);
             }
-            if(options.debug) {
-                _debug = Boolean(options.debug);
+            if(optDebug) {
+                _debug = Boolean(optDebug);
             }
             _lastCurrentTime = _minSceneDuration;
         }
         // _threshold is set between 0 and maxDiff interval to save calculations later.
         _threshold = _threshold * maxDiff / 100;
         // The number of pixels of resized frames. Used to speed up average calculation.
-        _step_sq = Math.pow(_step, 2);
+        _step_sq = _step * _step;
 
         // Debug
         if(_debug) {
@@ -334,7 +348,7 @@ var Scd = function(videoEl, options, callback) {
             that.sceneTimecodes.push(_currentTime);
             if(_debug) {
                 var tmpContainer = document.createElement("div");
-                var tmpCanvasA = document.createElement("canvas");
+                var tmpCanvasA = createCanvas();
                 var half_width = tmpCanvasA.width = _width / 2;
                 var half_height = tmpCanvasA.height = _height / 2;
                 tmpCanvasA.getContext("2d").drawImage(videoEl, 0, 0, _width, _height, 0, 0, half_width, half_height);

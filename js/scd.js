@@ -27,12 +27,6 @@ var Scd = function(videoEl, options, callback) {
     var that = this;
 
     /**
-     * @type {HTMLDocument|null}
-     * @private
-     */
-    var document = /** @type {HTMLDocument|null} */ window.document;
-
-    /**
      * Default mode is FastForward. Playback mode is used on browsers that don't support setting current playback time to sub seconds (e.g. Opera).
      * @type {string}
      * @private
@@ -200,25 +194,20 @@ var Scd = function(videoEl, options, callback) {
     var init = function() {
         // Options.
         if(options) {
-            var optMode = options['mode'],
-                optStep = options['step'],
-                optMinSceneDuration = options['minSceneDuration'],
-                optThreshold = options['threshold'],
-                optDebug = options['debug'];
-            if(optMode && optMode == "PlaybackMode") {
-                _mode = optMode;
+            if(options['mode'] && options['mode'] == "PlaybackMode") {
+                _mode = options['mode'];
             }
-            if(optStep) {
-                _step = parseInt(optStep, 10);
+            if(options['step']) {
+                _step = parseInt(options['step'], 10);
             }
-            if(optMinSceneDuration) {
-                _minSceneDuration = parseFloat(optMinSceneDuration);
+            if(options['minSceneDuration']) {
+                _minSceneDuration = parseFloat(options['minSceneDuration']);
             }
-            if(optThreshold) {
-                _threshold = parseFloat(optThreshold);
+            if(options['threshold']) {
+                _threshold = parseFloat(options['threshold']);
             }
-            if(optDebug) {
-                _debug = Boolean(optDebug);
+            if(options['debug']) {
+                _debug = Boolean(options['debug']);
             }
             _lastCurrentTime = _minSceneDuration;
         }

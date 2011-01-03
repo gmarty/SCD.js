@@ -1,22 +1,22 @@
 /**
  * Perform a scene change detection process on a video tag.
  * @constructor
- * @param {HTMLVideoElement} videoEl The video element to process.
- * @param {Object.<string, *>} options An array of options.
- * @param {function()} callback The callback function executed when process is complete.
+ * @param {HTMLElement|HTMLVideoElement} videoEl The video element to process.
+ * @param {Object.<string, *>=} options An array of options.
+ * @param {function()=} callback The callback function executed when process is complete.
  */
 var Scd = function(videoEl, options, callback) {
     /**
      * Contains detected scene changes timecodes.
      * @type {Array.<number>}
      */
-    Scd.prototype.sceneTimecodes = [];
+    Scd.prototype['sceneTimecodes'] = [];
     
 
     /**
      * Temporary halt the scene detection process. Use Scd.start() again to resume process.
      */
-    Scd.prototype.pause = function() {
+    Scd.prototype['pause'] = function() {
         if(_stop) {
             return;
         }
@@ -32,7 +32,7 @@ var Scd = function(videoEl, options, callback) {
     /**
      * Cancel the scene detection process.
      */
-    Scd.prototype.stop = function() {
+    Scd.prototype['stop'] = function() {
         that.pause();
 
         if(_mode == "FastForwardMode") {
@@ -44,9 +44,17 @@ var Scd = function(videoEl, options, callback) {
     };
 
     // Private properties.
-    /** @private */ var that = this;
-    /** @private */ var document = window.document;
-    /** @private */ var Math = window.Math;
+    /**
+     * @type {Scd}
+     * @private
+     */
+    var that = this;
+
+    /**
+     * @type {HTMLDocument}
+     * @private
+     */
+    var document = window.document;
 
     /**
      * Default mode is FastForward. Playback mode is used on browsers that don't support setting current playback time to sub seconds (e.g. Opera).
@@ -126,6 +134,20 @@ var Scd = function(videoEl, options, callback) {
     var _height = 0;
 
     /**
+     * Check that the input videoEl is a video element.
+     * @param {HTMLElement|HTMLVideoElement} videoEl The video element to test.
+     * @return {HTMLVideoElement} The video element.
+     */
+    var CheckVideoElement = function(videoEl) {
+        if(videoEl.constructor.toString() != "[object HTMLVideoElement]") {
+            throw "Inputed element is not a video element.";
+        }
+        return videoEl;
+    }
+
+    videoEl = CheckVideoElement(videoEl);
+
+    /**
      * Initial state of controls attribute of the video tag.
      * @type {boolean}
      * @private
@@ -193,13 +215,13 @@ var Scd = function(videoEl, options, callback) {
 
     /**
      * Expose data about the video when available.
-     * @this {Element}
+     * @this {HTMLVideoElement}
      * @private
      */
     var getVideoData = function() {
         // durationchange appears to be the first event triggered by video that exposes width and height.
-        _width = this.videoWidth;
-        _height = this.videoHeight;
+        _width = /** @type {number} */ this.videoWidth;
+        _height = /** @type {number} */ this.videoHeight;
         _canvasA.width = _step;
         _canvasA.height = _step;
         _canvasB.width = _step;
@@ -211,6 +233,7 @@ var Scd = function(videoEl, options, callback) {
 
     /**
      * Initialize values.
+     * @private
      */
     var init = function() {
         // Options.
@@ -249,13 +272,13 @@ var Scd = function(videoEl, options, callback) {
             document.getElementsByTagName("body")[0].appendChild(_debugContainer);
         }
 
-        // @todo: Call this function is Scd is instantiated after durationchange was triggered.
+        // @todo: Call this function if Scd is instantiated after durationchange was triggered.
         videoEl.addEventListener("durationchange", getVideoData, false);
 
         /**
          * Launch the scene detection process.
          */
-        Scd.prototype.start = (_mode == "FastForwardMode") ? function() {
+        Scd.prototype['start'] = (_mode == "FastForwardMode") ? function() {
             // Fast forward mode.
             if(_stop) {
                 return;
@@ -283,18 +306,12 @@ var Scd = function(videoEl, options, callback) {
             videoEl.play();
         };
 
-        /**
-         * Calculates the median value of an array.
-         * @param {Array.<number>} numArray An array of values.
-         * @return {number} The median value.
-         * @private
-         */
         getMedian = (_step_sq % 2) ? function(numArray) {
             numArray.sort(compare);
             return numArray[((_step_sq + 1) / 2) - 1];
         } : function(numArray) {
             numArray.sort(compare);
-            var middle = (_step_sq + 1) / 2;
+            var /** @type {number} */ middle = (_step_sq + 1) / 2;
             return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
         };
     }
@@ -336,21 +353,21 @@ var Scd = function(videoEl, options, callback) {
             if(callback) {
                 callback();
             }
-            that.stop();
+            that['stop']();
 
             return;
         }
 
         _ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step, _step);
-        var diff = computeDifferences(_ctxA, _ctxB);
+        var /** @type {Array.<number>} */ diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[0] > _threshold) {
-            that.sceneTimecodes.push(_currentTime);
+            that['sceneTimecodes'].push(_currentTime);
             if(_debug) {
-                var tmpContainer = document.createElement("div");
-                var tmpCanvasA = createCanvas();
-                var half_width = tmpCanvasA.width = _width / 2;
-                var half_height = tmpCanvasA.height = _height / 2;
+                var /** @type {Element} */ tmpContainer = document.createElement("div"),
+                    /** @type {HTMLCanvasElement} */ tmpCanvasA = createCanvas(),
+                    /** @type {number} */ half_width = tmpCanvasA.width = _width / 2,
+                    /** @type {number} */ half_height = tmpCanvasA.height = _height / 2;
                 tmpCanvasA.getContext("2d").drawImage(videoEl, 0, 0, _width, _height, 0, 0, half_width, half_height);
                 tmpContainer.appendChild(tmpCanvasA);
                 tmpContainer.appendChild(document.createElement("br"));
@@ -371,14 +388,14 @@ var Scd = function(videoEl, options, callback) {
      * @private
      */
     var computeDifferences = function(ctxA, ctxB) {
-        var colorsA = ctxA.getImageData(0, 0, _step, _step).data;
-        var colorsB = ctxB.getImageData(0, 0, _step, _step).data;
-        var diff = [];
-        var i = colorsA.length;
-        var max;
-        var avg;
-        var med;
-        var min;
+        var /** @type {Array.<number>} */ diff = [],
+            /** @type {Array.<number>} */ colorsA = ctxA.getImageData(0, 0, _step, _step).data,
+            /** @type {Array.<number>} */ colorsB = ctxB.getImageData(0, 0, _step, _step).data,
+            /** @type {number} */ i = colorsA.length,
+            /** @type {number} */ max,
+            /** @type {number} */ avg,
+            /** @type {number} */ med,
+            /** @type {number} */ min;
 
         do {
             diff.push(getColorDistance(colorsA[i-4], colorsA[i+1-4], colorsA[i+2-4], colorsB[i-4], colorsB[i+1-4], colorsB[i+2-4]));
@@ -440,6 +457,12 @@ var Scd = function(videoEl, options, callback) {
         }) / _step_sq;
     };
 
+    /**
+     * Calculates the median value of an array.
+     * @param {Array.<number>} numArray An array of values.
+     * @return {number} The median value.
+     * @private
+     */
     var getMedian;
 
     /**

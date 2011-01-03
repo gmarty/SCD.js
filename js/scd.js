@@ -7,41 +7,17 @@
  */
 var Scd = function(videoEl, options, callback) {
     /**
-     * Contains detected scene changes timecodes.
-     * @type {Array.<number>}
+     * Check that the input videoEl is a video element.
+     * @param {HTMLElement|HTMLVideoElement} videoEl The video element to test.
+     * @return {HTMLVideoElement} The video element.
      */
-    Scd.prototype['sceneTimecodes'] = [];
-    
-
-    /**
-     * Temporary halt the scene detection process. Use Scd.start() again to resume process.
-     */
-    Scd.prototype['pause'] = function() {
-        if(_stop) {
-            return;
+    var CheckVideoElement = function(videoEl) {
+        if(!videoEl || videoEl.constructor.toString() != "[object HTMLVideoElement]") {
+            throw "Inputed element is not a video element.";
         }
-
-        if(_mode == "FastForwardMode") {
-            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
-            // Restore video element controls to its original state.
-            videoEl.controls = _controls;
-        }
-        videoEl.pause();
-    };
-
-    /**
-     * Cancel the scene detection process.
-     */
-    Scd.prototype['stop'] = function() {
-        that.pause();
-
-        if(_mode == "FastForwardMode") {
-            // Restore video element controls to its original state.
-            videoEl.controls = _controls;
-        }
-
-        _stop = true;
-    };
+        return videoEl;
+    }
+    videoEl = CheckVideoElement(videoEl);
 
     // Private properties.
     /**
@@ -51,10 +27,10 @@ var Scd = function(videoEl, options, callback) {
     var that = this;
 
     /**
-     * @type {HTMLDocument}
+     * @type {HTMLDocument|null}
      * @private
      */
-    var document = window.document;
+    var document = /** @type {HTMLDocument|null} */ window.document;
 
     /**
      * Default mode is FastForward. Playback mode is used on browsers that don't support setting current playback time to sub seconds (e.g. Opera).
@@ -132,20 +108,6 @@ var Scd = function(videoEl, options, callback) {
      * @private
      */
     var _height = 0;
-
-    /**
-     * Check that the input videoEl is a video element.
-     * @param {HTMLElement|HTMLVideoElement} videoEl The video element to test.
-     * @return {HTMLVideoElement} The video element.
-     */
-    var CheckVideoElement = function(videoEl) {
-        if(videoEl.constructor.toString() != "[object HTMLVideoElement]") {
-            throw "Inputed element is not a video element.";
-        }
-        return videoEl;
-    }
-
-    videoEl = CheckVideoElement(videoEl);
 
     /**
      * Initial state of controls attribute of the video tag.
@@ -332,10 +294,10 @@ var Scd = function(videoEl, options, callback) {
      * @private
      */
     var playbackModeEvent = function() {
-        if(video.currentTime - _lastCurrentTime >= _minSceneDuration) {
+        if(videoEl.currentTime - _lastCurrentTime >= _minSceneDuration) {
             detectSceneChange();
 
-            _lastCurrentTime = video.currentTime;
+            _lastCurrentTime = videoEl.currentTime;
         }
     };
 
@@ -476,4 +438,42 @@ var Scd = function(videoEl, options, callback) {
     };
 
     init();
+
+    /**
+     * Contains detected scene changes timecodes.
+     * @type {Array.<number>}
+     * @public
+     */
+    Scd.prototype['sceneTimecodes'] = [];
+
+    /**
+     * Temporary halt the scene detection process. Use Scd.start() again to resume process.
+     */
+    Scd.prototype['pause'] = function() {
+        if(_stop) {
+            return;
+        }
+
+        if(_mode == "FastForwardMode") {
+            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
+            // Restore video element controls to its original state.
+            videoEl.controls = _controls;
+        }
+        videoEl.pause();
+    };
+
+    /**
+     * Cancel the scene detection process.
+     */
+    Scd.prototype['stop'] = function() {
+        that['pause']();
+
+        if(_mode == "FastForwardMode") {
+            // Restore video element controls to its original state.
+            videoEl.controls = _controls;
+        }
+
+        _stop = true;
+    };
 };
+window['Scd'] = Scd;

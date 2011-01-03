@@ -12,7 +12,7 @@ var Scd = function(videoEl, options, callback) {
      * @return {HTMLVideoElement} The video element.
      */
     var CheckVideoElement = function(videoEl) {
-        if(!videoEl || videoEl.constructor.toString() != "[object HTMLVideoElement]") {
+        if(!videoEl || videoEl.constructor.toString().indexOf("HTMLVideoElement") < 0) {
             throw "Inputed element is not a video element.";
         }
         return videoEl;

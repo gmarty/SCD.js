@@ -1,7 +1,7 @@
 /**
  * Perform a scene change detection process on a video tag.
  * @constructor
- * @param {Element} videoEl The video element to process.
+ * @param {HTMLVideoElement} videoEl The video element to process.
  * @param {Object.<string, *>} options An array of options.
  * @param {function()} callback The callback function executed when process is complete.
  */
@@ -134,14 +134,14 @@ var Scd = function(videoEl, options, callback) {
 
     /**
      * Canvas element of image 1.
-     * @type {Element}
+     * @type {HTMLCanvasElement}
      * @private
      */
     var _canvasA = document.createElement("canvas");
 
     /**
      * Canvas element of image 2.
-     * @type {Element}
+     * @type {HTMLCanvasElement}
      * @private
      */
     var _canvasB = document.createElement("canvas");
@@ -248,7 +248,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-            videoEl.controls = 0;
+            videoEl.controls = false;
 
             videoEl.currentTime = _currentTime;
             videoEl.addEventListener("seeked", fastForwardModeEvent, false);
@@ -261,7 +261,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-            videoEl.controls = 0;
+            videoEl.controls = false;
 
             videoEl.currentTime = 0;
             videoEl.addEventListener("timeupdate", playbackModeEvent, false);

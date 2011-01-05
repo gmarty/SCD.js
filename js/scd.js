@@ -6,19 +6,11 @@
  * @param {function()=} callback The callback function executed when process is complete.
  */
 var Scd = function(videoEl, options, callback) {
-    /**
-     * Check that the input videoEl is a video element.
-     * @param {HTMLElement|HTMLVideoElement} videoEl The video element to test.
-     * @return {HTMLVideoElement} The video element.
-     * @private
-     */
-    var CheckVideoElement = function(videoEl) {
-        if(!videoEl || videoEl.constructor.toString().indexOf("HTMLVideoElement") < 0) {
-            throw "Inputed element is not a video element.";
-        }
-        return /** @type {HTMLVideoElement} */ (videoEl);
+    if(!videoEl || videoEl.constructor.toString().indexOf("HTMLVideoElement") < 0) {
+        throw "Inputed element is not a video element.";
+    }else {
+        videoEl = /** @type {HTMLVideoElement} */ (videoEl);
     }
-    videoEl = CheckVideoElement(videoEl);
 
     // Private properties.
     /**
@@ -118,7 +110,7 @@ var Scd = function(videoEl, options, callback) {
      */
     var createCanvas = function() {
         return /** @type {HTMLCanvasElement} */ (document.createElement("canvas"));
-    }
+    };
 
     /**
      * Canvas element of image 1.
@@ -195,20 +187,20 @@ var Scd = function(videoEl, options, callback) {
     var init = function() {
         // Options.
         if(options) {
-            if(options['mode'] && options['mode'] == "PlaybackMode") {
-                _mode = /** @type {string} */ (options['mode']);
+            if(options["mode"] && options["mode"] === "PlaybackMode") {
+                _mode = /** @type {string} */ (options["mode"]);
             }
-            if(options['step']) {
-                _step = parseInt(options['step'], 10);
+            if(options["step"]) {
+                _step = parseInt(options["step"], 10);
             }
-            if(options['minSceneDuration']) {
-                _minSceneDuration = parseFloat(options['minSceneDuration']);
+            if(options["minSceneDuration"]) {
+                _minSceneDuration = parseFloat(options["minSceneDuration"]);
             }
-            if(options['threshold']) {
-                _threshold = parseFloat(options['threshold']);
+            if(options["threshold"]) {
+                _threshold = parseFloat(options["threshold"]);
             }
-            if(options['debug']) {
-                _debug = Boolean(options['debug']);
+            if(options["debug"]) {
+                _debug = Boolean(options["debug"]);
             }
             _lastCurrentTime = _minSceneDuration;
         }
@@ -230,7 +222,7 @@ var Scd = function(videoEl, options, callback) {
         /**
          * Launch the scene detection process.
          */
-        Scd.prototype['start'] = (_mode == "FastForwardMode") ? function() {
+        Scd.prototype["start"] = (_mode === "FastForwardMode") ? function() {
             // Fast forward mode.
             if(_stop) {
                 return;
@@ -267,7 +259,7 @@ var Scd = function(videoEl, options, callback) {
             var middle = (_step_sq + 1) / 2;
             return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
         };
-    }
+    };
 
     /**
      * Function triggered by seeked event on FastForwardMode.
@@ -303,7 +295,7 @@ var Scd = function(videoEl, options, callback) {
         if(callback) {
             callback();
         }
-        that['stop']();
+        that["stop"]();
         // @todo: Detach event when in PlaybackMode.
     };
 
@@ -326,7 +318,7 @@ var Scd = function(videoEl, options, callback) {
         var diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[0] > _threshold) {
-            that['sceneTimecodes'].push(_currentTime);
+            that["sceneTimecodes"].push(_currentTime);
             if(_debug) {
                 var /** @type {Element} */ tmpContainer = document.createElement("div"),
                     /** @type {HTMLCanvasElement} */ tmpCanvasA = createCanvas(),
@@ -443,24 +435,17 @@ var Scd = function(videoEl, options, callback) {
     init();
 
     /**
-     * Contains detected scene changes timecodes.
-     * @type {Array.<number>}
-     * @public
-     */
-    Scd.prototype['sceneTimecodes'] = [];
-
-    /**
      * Temporary halt the scene detection process. Use Scd.start() again to resume process.
      */
-    Scd.prototype['pause'] = function() {
+    Scd.prototype["pause"] = function() {
         if(_stop) {
             return;
         }
 
-        if(_mode == "FastForwardMode") {
-            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
+        if(_mode === "FastForwardMode") {
             // Restore video element controls to its original state.
             videoEl.controls = _controls;
+            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
         }
         videoEl.pause();
     };
@@ -468,10 +453,10 @@ var Scd = function(videoEl, options, callback) {
     /**
      * Cancel the scene detection process.
      */
-    Scd.prototype['stop'] = function() {
-        that['pause']();
+    Scd.prototype["stop"] = function() {
+        that["pause"]();
 
-        if(_mode == "FastForwardMode") {
+        if(_mode === "FastForwardMode") {
             // Restore video element controls to its original state.
             videoEl.controls = _controls;
         }
@@ -479,4 +464,12 @@ var Scd = function(videoEl, options, callback) {
         _stop = true;
     };
 };
-window['Scd'] = Scd;
+
+/**
+ * Contains detected scene changes timecodes.
+ * @type {Array.<number>}
+ * @public
+ */
+Scd.prototype["sceneTimecodes"] = [];
+
+window["Scd"] = Scd;

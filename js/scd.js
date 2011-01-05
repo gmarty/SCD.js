@@ -240,7 +240,7 @@ var Scd = function(videoEl, options, callback) {
             videoEl.controls = false;
 
             videoEl.currentTime = _currentTime;
-            videoEl.addEventListener("seeked", FastForwardModeEvent, false);
+            videoEl.addEventListener("seeked", fastForwardModeEvent, false);
 
             detectSceneChange();
         } : function() {
@@ -274,7 +274,7 @@ var Scd = function(videoEl, options, callback) {
      * @this {HTMLVideoElement}
      * @private
      */
-    var FastForwardModeEvent = function() {
+    var fastForwardModeEvent = function() {
         detectSceneChange();
 
         _currentTime += _minSceneDuration;
@@ -458,7 +458,7 @@ var Scd = function(videoEl, options, callback) {
         }
 
         if(_mode == "FastForwardMode") {
-            videoEl.removeEventListener("seeked", FastForwardModeEvent, false);
+            videoEl.removeEventListener("seeked", fastForwardModeEvent, false);
             // Restore video element controls to its original state.
             videoEl.controls = _controls;
         }

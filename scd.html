@@ -38,11 +38,11 @@ div.scd-debug b {
  */
 var video = document.getElementById("video");
 var scd = new Scd(video, {
-		mode: 'PlaybackMode',
+		mode: 'FastforwardMode',
 		step: 50,
 		debug: 1
 	}, function(){
-    console.log(scd.sceneTimecodes);
+    console.log(scd.sceneTimecodes.join(", "));
 });
 // Attach click events to buttons.
 ["start", "pause", "stop"].forEach(function(element) {

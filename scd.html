@@ -23,7 +23,10 @@ div.scd-debug b {
 <input type="button" value="Start" id="start">
 <input type="button" value="Pause" id="pause">
 <input type="button" value="Stop" id="stop">
-<video id="video" src="samples/video.ogv" controls></video>
+<video id="video" controls>
+    <source src="samples/video.ogv" type='video/ogg; codecs="theora, vorbis"'>
+    <source src="samples/video.webm" type='video/webm; codecs="vp8, vorbis"'>
+</video>
 <div id="scenes">
   <h2>Detected scenes first frame</h2>
 </div>
@@ -38,8 +41,9 @@ div.scd-debug b {
  */
 var video = document.getElementById("video");
 var scd = new Scd(video, {
-		mode: 'FastforwardMode',
-		step: 50,
+		mode: 'PlaybackMode',
+		step_width: 50,
+		step_height: 37,
 		debug: 1
 	}, function(){
     console.log(scd.sceneTimecodes.join(", "));

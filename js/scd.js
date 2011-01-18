@@ -27,11 +27,18 @@ var Scd = function(videoEl, options, callback) {
     var _mode = "FastForwardMode";
 
     /**
-     * The width and height at which the frames will be resized down to for comparison.
+     * The width at which the frames will be resized down to for comparison.
      * @type {number}
      * @private
      */
-    var _step = 50;
+    var _step_width = 50;
+
+    /**
+     * The height at which the frames will be resized down to for comparison.
+     * @type {number}
+     * @private
+     */
+    var _step_height = 50;
 
     /**
      * The minimal duration of a scene in s. 2 consecutive scene changes can be detected within this interval.
@@ -171,11 +178,11 @@ var Scd = function(videoEl, options, callback) {
         // durationchange appears to be the first event triggered by video that exposes width and height.
         _width = this.videoWidth;
         _height = this.videoHeight;
-        _canvasA.width = _step;
-        _canvasA.height = _step;
-        _canvasB.width = _step;
-        _canvasB.height = _step;
-        //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step, _step);
+        _canvasA.width = _step_width;
+        _canvasA.height = _step_height;
+        _canvasB.width = _step_width;
+        _canvasB.height = _step_height;
+        //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
 
         this.removeEventListener("durationchange", getVideoData, false);
     };
@@ -190,8 +197,12 @@ var Scd = function(videoEl, options, callback) {
             if(options["mode"] && options["mode"] === "PlaybackMode") {
                 _mode = /** @type {string} */ (options["mode"]);
             }
-            if(options["step"]) {
-                _step = parseInt(options["step"], 10);
+            if(options["step_width"] && options["step_height"]) {
+                _step_width = parseInt(options["step_width"], 10);
+                _step_height = parseInt(options["step_height"], 10);
+            }else if(options["step"]) {
+                _step_width = parseInt(options["step"], 10);
+                _step_height = parseInt(options["step"], 10);
             }
             if(options["minSceneDuration"]) {
                 _minSceneDuration = parseFloat(options["minSceneDuration"]);
@@ -207,7 +218,7 @@ var Scd = function(videoEl, options, callback) {
         // _threshold is set between 0 and maxDiff100 interval to save calculations later.
         _threshold = _threshold * maxDiff100;
         // The number of pixels of resized frames. Used to speed up average calculation.
-        _step_sq = _step * _step;
+        _step_sq = _step_width * _step_height;
 
         // Debug
         if(_debug) {
@@ -314,7 +325,7 @@ var Scd = function(videoEl, options, callback) {
             return;
         }
 
-        _ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step, _step);
+        _ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
         var diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[0] > _threshold) {
@@ -334,7 +345,7 @@ var Scd = function(videoEl, options, callback) {
             }
         }
 
-        _ctxB.drawImage(_canvasA, 0, 0, _step, _step, 0, 0, _step, _step);
+        _ctxB.drawImage(_canvasA, 0, 0, _step_width, _step_height, 0, 0, _step_width, _step_height);
     };
 
     /**
@@ -347,8 +358,8 @@ var Scd = function(videoEl, options, callback) {
      */
     var computeDifferences = function(ctxA, ctxB) {
         var /** @type {Array.<number>} */ diff = [],
-            /** @type {Array.<number>} */ colorsA = ctxA.getImageData(0, 0, _step, _step).data,
-            /** @type {Array.<number>} */ colorsB = ctxB.getImageData(0, 0, _step, _step).data,
+            /** @type {Array.<number>} */ colorsA = ctxA.getImageData(0, 0, _step_width, _step_height).data,
+            /** @type {Array.<number>} */ colorsB = ctxB.getImageData(0, 0, _step_width, _step_height).data,
             /** @type {number} */ i = colorsA.length,
             /** @type {number} */ max,
             /** @type {number} */ avg,

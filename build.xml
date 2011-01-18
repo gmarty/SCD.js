@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="scd" default="build">
+    <property name="closure-compiler.dir" value="./closure-compiler" />
+    <property name="closure-compiler.jar" value="${closure-compiler.dir}/compiler.jar" />
+    <property name="build.dir" value="${basedir}/min" />
+    <macrodef name="closure-compile">
+        <attribute name="outputfile" />
+        <attribute name="compilerjarfile" default="${closure-compiler.jar}" />
+        <attribute name="compilationlevel" default="SIMPLE_OPTIMIZATIONS" />
+        <attribute name="summarydetaillevel" default="1" />
+        <attribute name="warninglevel" default="DEFAULT" />
+        <element name="extraflags" optional="yes" />
+        <element name="extrapaths" optional="yes" />
+        <sequential>
+            <java jar="${closure-compiler.jar}" fork="true" failonerror="true" logError="true">
+                <arg line="--js js/scd.js" />
+                <arg line="--js_output_file @{outputfile}" />
+                <arg line="--compilation_level=@{compilationlevel}" />
+                <arg line="--summary_detail_level @{summarydetaillevel}" />
+                <arg line="--warning_level @{warninglevel}" />
+                <extraflags />
+            </java>
+        </sequential>
+    </macrodef>
+    <target name="minify" description="generates a minified version of the script">
+        <mkdir dir="${build.dir}" />
+        <closure-compile outputfile="${build.dir}/scd.min.js" compilationlevel="ADVANCED_OPTIMIZATIONS" summarydetaillevel="3" warninglevel="VERBOSE">
+            <extraflags>
+                <arg line="--js js/exports.js" />
+            </extraflags>
+        </closure-compile>
+    </target>
+    <target name="build" depends="minify" />
+</project>

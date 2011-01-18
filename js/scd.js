@@ -471,5 +471,3 @@ var Scd = function(videoEl, options, callback) {
  * @public
  */
 Scd.prototype["sceneTimecodes"] = [];
-
-window["Scd"] = Scd;

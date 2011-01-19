@@ -1,7 +1,7 @@
 /**
  * Perform a scene change detection process on a video tag.
  * @constructor
- * @param {HTMLElement|HTMLVideoElement} videoEl The video element to process.
+ * @param {HTMLVideoElement} videoEl The video element to process.
  * @param {Object.<string, *>=} options An array of options.
  * @param {function()=} callback The callback function executed when process is complete.
  */
@@ -340,7 +340,7 @@ var Scd = function(videoEl, options, callback) {
                 tmpContainer.appendChild(document.createElement("br"));
                 tmpContainer.appendChild(tmpCanvasA);
                 tmpContainer.appendChild(document.createElement("br"));
-                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[2] / maxDiff100) + "%, avg: " + Math.round(diff[0] / maxDiff100) + "%, med: " + Math.round(diff[1] / maxDiff100) + "%, min: " + Math.round(diff[3] / maxDiff100) + "%"));
+                tmpContainer.appendChild(document.createTextNode("max: " + Math.round(diff[2] / maxDiff100) + "%, avg: " + Math.round(diff[1] / maxDiff100) + "%, med: " + Math.round(diff[0] / maxDiff100) + "%, min: " + Math.round(diff[3] / maxDiff100) + "%"));
                 _debugContainer.appendChild(tmpContainer);
             }
         }
@@ -370,16 +370,16 @@ var Scd = function(videoEl, options, callback) {
             diff.push(getColorDistance(colorsA[i-4], colorsA[i+(1-4)], colorsA[i+(2-4)], colorsB[i-4], colorsB[i+(1-4)], colorsB[i+(2-4)]));
         } while(i = i - 4);
 
-        avg = getAverage(diff);
+        med = getMedian(diff);
         if(_debug) {
             // When debug is on, full data are computed and returned...
+            avg = getAverage(diff);
             max = getMaxOfArray(diff);
             min = getMinOfArray(diff);
-            med = getMedian(diff);
-            return [avg, med, max, min];
+            return [med, avg, max, min];
         }else {
-            // Otherwise, only the average difference value is returned.
-            return [avg];
+            // Otherwise, only the median value is returned.
+            return [med];
         }
     };
 

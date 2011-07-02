@@ -256,7 +256,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-//////////////////////////////////////////////////////////////////////////////////////////////////videoEl.controls = false;
+            videoEl.controls = false;
 
             videoEl.currentTime = _currentTime;
             videoEl.addEventListener("seeked", fastForwardModeEvent, false);
@@ -269,7 +269,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-//////////////////////////////////////////////////////////////////////////////////////////////////videoEl.controls = false;
+            videoEl.controls = false;
 
             videoEl.currentTime = 0;
             videoEl.addEventListener("timeupdate", playbackModeEvent, false);

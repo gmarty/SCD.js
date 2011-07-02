@@ -1,4 +1,12 @@
 /**
+ * @preserve SCD.js
+ * 
+ * Copyright 2011, Guillaume Marty (edo999@gmail.com)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * https://github.com/gmarty/SCD.js
+ */
+
+/**
  * Perform a scene change detection process on a video tag.
  * @constructor
  * @param {HTMLVideoElement} videoEl The video element to process.
@@ -168,6 +176,14 @@ var Scd = function(videoEl, options, callback) {
      * @private
      */
     var _debugContainer;
+    
+    /**
+     * The property holding the event emitter.
+     * @type {Object}
+     * @private
+     */
+    var _events;
+    Scd.prototype["events"] = _events = new EventEmitter();
 
     /**
      * Expose data about the video when available.
@@ -240,7 +256,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-            videoEl.controls = false;
+//////////////////////////////////////////////////////////////////////////////////////////////////videoEl.controls = false;
 
             videoEl.currentTime = _currentTime;
             videoEl.addEventListener("seeked", fastForwardModeEvent, false);
@@ -253,7 +269,7 @@ var Scd = function(videoEl, options, callback) {
             }
 
             // Remove controls from video during process.
-            videoEl.controls = false;
+//////////////////////////////////////////////////////////////////////////////////////////////////videoEl.controls = false;
 
             videoEl.currentTime = 0;
             videoEl.addEventListener("timeupdate", playbackModeEvent, false);
@@ -329,6 +345,10 @@ var Scd = function(videoEl, options, callback) {
         var diff = computeDifferences(_ctxA, _ctxB);
 
         if(diff[0] > _threshold) {
+            
+            // Trigger a cut event.
+            _events.emit("scenecut");
+          
             that["sceneTimecodes"].push(_currentTime);
             if(_debug) {
                 var /** @type {Element} */ tmpContainer = document.createElement("div"),

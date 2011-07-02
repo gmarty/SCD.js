@@ -30,15 +30,9 @@ div.scd-debug b {
 <div id="scenes">
   <h2>Detected scenes first frame</h2>
 </div>
+<script src="js/EventEmitter.min.js"></script>
 <script src="js/scd.js"></script>
 <script>
-/**
- * @todo:
- * - Numéroter les occurences et isoler 2 changements de scène consécutifs -> traitement ?
- * - Pondérer les calculs par les moyennes flottantes des x dernières frames.
- * - Quand un changement de scène a été trouvé, détecter plus précisément le point de rupture.
- * - Calculer la moyenne globale des changements et utiliser ce coefficient pour pondérer scd.threshold (corrige différences navigateurs).
- */
 var video = document.getElementById("video");
 var scd = new Scd(video, {
 		mode: 'PlaybackMode',
@@ -48,6 +42,11 @@ var scd = new Scd(video, {
 	}, function(){
     console.log(scd.sceneTimecodes.join(", "));
 });
+
+scd.events.addListener('scenecut', function(e) {
+  console.log('scenecut');
+});
+
 // Attach click events to buttons.
 ["start", "pause", "stop"].forEach(function(element) {
     document.getElementById(element).onclick = scd[element];

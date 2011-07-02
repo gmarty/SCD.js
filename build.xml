@@ -13,6 +13,7 @@
         <element name="extrapaths" optional="yes" />
         <sequential>
             <java jar="${closure-compiler.jar}" fork="true" failonerror="true" logError="true">
+                <arg line="--js js/EventEmitter.js" />
                 <arg line="--js js/scd.js" />
                 <arg line="--js_output_file @{outputfile}" />
                 <arg line="--compilation_level=@{compilationlevel}" />

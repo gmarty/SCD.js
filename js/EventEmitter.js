@@ -9,7 +9,7 @@
 /**
  * @constructor
  */
-function EventEmitter() {
+var EventEmitter = function() {
 	// Put the instance in scope and initialise all required variables
 	var instance = this,
 		listeners = {},

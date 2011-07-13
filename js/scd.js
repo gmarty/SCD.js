@@ -1,9 +1,9 @@
 /**
- *@preserve SCD.js
+ * @preserve SCD.js.
  *
- *Copyright 2011, Guillaume Marty (edo999@gmail.com)
- *Dual licensed under the MIT or GPL Version 2 licenses.
- *https://github.com/gmarty/SCD.js
+ * Copyright 2011, Guillaume Marty (edo999@gmail.com)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * https://github.com/gmarty/SCD.js
  */
 
 
@@ -185,7 +185,6 @@ var Scd = function(videoEl, options, callback) {
    * @private
    */
   var _events;
-  Scd.prototype['events'] = _events = new EventEmitter();
 
   /**
    * Expose data about the video when available.
@@ -194,8 +193,20 @@ var Scd = function(videoEl, options, callback) {
    */
   var getVideoData = function() {
     // durationchange appears to be the first event triggered by video that exposes width and height.
-    _width = this.videoWidth;
-    _height = this.videoHeight;
+    
+    // First we set default values to video tag size (Type set to string to keep Compiler happy).
+    this.width = /** @type {string} */ this.width ? this.width : this.videoWidth;
+    this.height = /** @type {string} */ this.height ? this.height : this.videoHeight;
+    
+    // Then, we calculate apparent video size to avoid passing out of bound values to canvas.drawImage().
+    if (this.videoWidth / this.videoHeight > this.width / this.height) {
+      _width = /** @type {number} */ this.width;
+      _height = this.videoHeight / this.videoWidth * this.width;
+    } else {
+      _width = this.videoWidth / this.videoHeight * this.height;
+      _height = /** @type {number} */ this.height;
+    }
+
     _canvasA.width = _step_width;
     _canvasA.height = _step_height;
     _canvasB.width = _step_width;
@@ -249,8 +260,8 @@ var Scd = function(videoEl, options, callback) {
     videoEl.addEventListener('durationchange', getVideoData, false);
 
     /**
-         * Launch the scene detection process.
-         */
+     * Launch the scene detection process.
+     */
     Scd.prototype['start'] = (_mode === 'FastForwardMode') ? function() {
       // Fast forward mode.
       if (_stop) {
@@ -466,6 +477,8 @@ var Scd = function(videoEl, options, callback) {
   var compare = function(a, b) {
     return a - b;
   };
+
+  Scd.prototype['events'] = _events = new EventEmitter();
 
   init();
 

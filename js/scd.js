@@ -193,27 +193,27 @@ var Scd = function(videoEl, options, callback) {
    */
   var getVideoData = function() {
     // durationchange appears to be the first event triggered by video that exposes width and height.
-    
+
     // First we set default values to video tag size (Type set to string to keep Compiler happy).
-    this.width = /** @type {string} */ this.width ? this.width : this.videoWidth;
-    this.height = /** @type {string} */ this.height ? this.height : this.videoHeight;
-    
+    videoEl.width = /** @type {string} */ videoEl.width ? videoEl.width : videoEl.videoWidth;
+    videoEl.height = /** @type {string} */ videoEl.height ? videoEl.height : videoEl.videoHeight;
+
     // Then, we calculate apparent video size to avoid passing out of bound values to canvas.drawImage().
-    if (this.videoWidth / this.videoHeight > this.width / this.height) {
-      _width = /** @type {number} */ this.width;
-      _height = this.videoHeight / this.videoWidth * this.width;
+    if (videoEl.videoWidth / videoEl.videoHeight > videoEl.width / videoEl.height) {
+      _width = /** @type {number} */ videoEl.width;
+      _height = videoEl.videoHeight / videoEl.videoWidth * videoEl.width;
     } else {
-      _width = this.videoWidth / this.videoHeight * this.height;
-      _height = /** @type {number} */ this.height;
+      _width = videoEl.videoWidth / videoEl.videoHeight * videoEl.height;
+      _height = /** @type {number} */ videoEl.height;
     }
 
     _canvasA.width = _step_width;
     _canvasA.height = _step_height;
     _canvasB.width = _step_width;
     _canvasB.height = _step_height;
-    //_ctxA.drawImage(this, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
+    //_ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
 
-    this.removeEventListener('durationchange', getVideoData, false);
+    videoEl.removeEventListener('durationchange', getVideoData, false);
   };
 
   /**
@@ -256,8 +256,14 @@ var Scd = function(videoEl, options, callback) {
       document.getElementsByTagName('body')[0].appendChild(_debugContainer);
     }
 
-    // @todo: Call this function if Scd is instantiated after durationchange was triggered.
-    videoEl.addEventListener('durationchange', getVideoData, false);
+    // videoEl.HAVE_FUTURE_DATA = 3
+    if (videoEl.readyState < 3) {
+      // We don't have enough data, so we'll initialize values when avaiable.
+      videoEl.addEventListener('durationchange', getVideoData, false);
+    } else {
+      // The metadata is already loaded.
+      getVideoData();
+    }
 
     /**
      * Launch the scene detection process.

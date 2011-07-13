@@ -188,7 +188,6 @@ var Scd = function(videoEl, options, callback) {
 
   /**
    * Expose data about the video when available.
-   * @this {HTMLVideoElement}
    * @private
    */
   var getVideoData = function() {

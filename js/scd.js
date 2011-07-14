@@ -341,7 +341,6 @@ var Scd = function(videoEl, options, callback) {
       callback();
     }
     that['stop']();
-    // @todo: Detach event when in PlaybackMode.
   };
 
   /**
@@ -512,6 +511,14 @@ var Scd = function(videoEl, options, callback) {
     if (_mode === 'FastForwardMode') {
       // Restore video element controls to its original state.
       videoEl.controls = _controls;
+    }
+    
+    // Remove event listeners.
+    if (_mode === 'FastForwardMode') {
+      videoEl.removeEventListener('seeked', fastForwardModeEvent, false);
+    } else {
+      videoEl.removeEventListener('timeupdate', playbackModeEvent, false);
+      videoEl.removeEventListener('ended', videoEndedEvent, false);
     }
 
     _stop = true;

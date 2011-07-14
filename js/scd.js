@@ -221,28 +221,33 @@ var Scd = function(videoEl, options, callback) {
    */
   var init = function() {
     // Options.
-    if (options) {
-      if (options['mode'] && options['mode'] === 'PlaybackMode') {
-        _mode = /** @type {string} */ (options['mode']);
-      }
-      if (options['step_width'] && options['step_height']) {
-        _step_width = parseInt(options['step_width'], 10);
-        _step_height = parseInt(options['step_height'], 10);
-      } else if (options['step']) {
-        _step_width = parseInt(options['step'], 10);
-        _step_height = parseInt(options['step'], 10);
-      }
-      if (options['minSceneDuration']) {
-        _minSceneDuration = parseFloat(options['minSceneDuration']);
-      }
-      if (options['threshold']) {
-        _threshold = parseFloat(options['threshold']);
-      }
-      if (options['debug']) {
-        _debug = Boolean(options['debug']);
-      }
-      _lastCurrentTime = _minSceneDuration;
+    options = options || {};
+
+    if (options['mode'] && options['mode'] === 'PlaybackMode') {
+      _mode = /** @type {string} */ options['mode'];
     }
+
+    if (options['step_width'] && options['step_height']) {
+      _step_width = parseInt(options['step_width'], 10);
+      _step_height = parseInt(options['step_height'], 10);
+    } else if (options['step']) {
+      _step_width = _step_height = parseInt(options['step'], 10);
+    }
+
+    if (options['minSceneDuration']) {
+      _minSceneDuration = parseFloat(options['minSceneDuration']);
+    }
+
+    if (options['threshold']) {
+      _threshold = parseFloat(options['threshold']);
+    }
+
+    if (options['debug']) {
+      _debug = Boolean(options['debug']);
+    }
+
+    _lastCurrentTime = _minSceneDuration;
+
     // _threshold is set between 0 and maxDiff100 interval to save calculations later.
     _threshold = _threshold * maxDiff100;
     // The number of pixels of resized frames. Used to speed up average calculation.
@@ -512,7 +517,7 @@ var Scd = function(videoEl, options, callback) {
       // Restore video element controls to its original state.
       videoEl.controls = _controls;
     }
-    
+
     // Remove event listeners.
     if (_mode === 'FastForwardMode') {
       videoEl.removeEventListener('seeked', fastForwardModeEvent, false);

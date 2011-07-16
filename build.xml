@@ -31,5 +31,14 @@
             </extraflags>
         </closure-compile>
     </target>
-    <target name="build" depends="minify" />
+    <target name="minify-nodebug" description="generates a minified version of the script">
+        <mkdir dir="${build.dir}" />
+        <closure-compile outputfile="${build.dir}/scd.min-nodebug.js" compilationlevel="ADVANCED_OPTIMIZATIONS" summarydetaillevel="3" warninglevel="VERBOSE">
+            <extraflags>
+                <arg line="--js js/exports.js" />
+                <arg line="--define='DEBUG=false'" />
+            </extraflags>
+        </closure-compile>
+    </target>
+    <target name="build" depends="minify, minify-nodebug" />
 </project>

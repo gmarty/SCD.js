@@ -7,6 +7,13 @@
  */
 
 
+/**
+ * @define {boolean} DEBUG is used to strip debugging code at compile time.
+ * Just supply --define='DEBUG=false' to Closure Compiler.
+ */
+var DEBUG = true;
+
+
 
 /**
  * Perform a scene change detection process on a video tag.
@@ -69,7 +76,7 @@ var Scd = function(videoEl, options, callback) {
    * @type {boolean}
    * @private
    */
-  var _debug = false;
+  var _debug = DEBUG && false;
 
   /**
    * Maximum color difference possible.
@@ -242,7 +249,7 @@ var Scd = function(videoEl, options, callback) {
       _threshold = parseFloat(options['threshold']);
     }
 
-    if (options['debug']) {
+    if (DEBUG && options['debug']) {
       _debug = Boolean(options['debug']);
     }
 

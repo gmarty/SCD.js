@@ -213,10 +213,8 @@ var Scd = function(videoEl, options, callback) {
       _height = /** @type {number} */ videoEl.height;
     }
 
-    _canvasA.width = _step_width;
-    _canvasA.height = _step_height;
-    _canvasB.width = _step_width;
-    _canvasB.height = _step_height;
+    _canvasA.width = _canvasB.width = _step_width;
+    _canvasA.height = _canvasB.height = _step_height;
     //_ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
 
     videoEl.removeEventListener('durationchange', getVideoData, false);
@@ -520,14 +518,12 @@ var Scd = function(videoEl, options, callback) {
   Scd.prototype['stop'] = function() {
     that['pause']();
 
-    if (_mode === 'FastForwardMode') {
-      // Restore video element controls to its original state.
-      videoEl.controls = _controls;
-    }
-
     // Remove event listeners.
     if (_mode === 'FastForwardMode') {
       videoEl.removeEventListener('seeked', fastForwardModeEvent, false);
+
+      // Restore video element controls to its original state.
+      videoEl.controls = _controls;
     } else {
       videoEl.removeEventListener('timeupdate', playbackModeEvent, false);
       videoEl.removeEventListener('ended', videoEndedEvent, false);

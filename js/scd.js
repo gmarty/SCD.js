@@ -180,6 +180,14 @@ var Scd = function(videoEl, options, callback) {
   var _step_sq;
 
   /**
+   * The total number of zones in the video to process + 1 / 2 - 1. Used to speed up calculation.
+   * @const
+   * @type {number}
+   * @private
+   */
+  var _step_sq_plus;
+
+  /**
    * The div element to write debug into.
    * @type {Element}
    * @private
@@ -257,6 +265,7 @@ var Scd = function(videoEl, options, callback) {
     _threshold = _threshold * maxDiff100;
     // The number of pixels of resized frames. Used to speed up average calculation.
     _step_sq = _step_width * _step_height;
+    _step_sq_plus = (_step_sq + 1) / 2 - 1;
 
     // Debug
     if (_debug) {
@@ -308,11 +317,10 @@ var Scd = function(videoEl, options, callback) {
 
     getMedian = (_step_sq % 2) ? function(numArray) {
       numArray.sort(compare);
-      return numArray[((_step_sq + 1) / 2) - 1];
+      return numArray[_step_sq_plus];
     } : function(numArray) {
       numArray.sort(compare);
-      var middle = (_step_sq + 1) / 2;
-      return (numArray[middle - 1.5] + numArray[middle - 0.5]) / 2;
+      return (numArray[_step_sq_plus - 0.5] + numArray[_step_sq_plus + 0.5]) / 2;
     };
   };
 

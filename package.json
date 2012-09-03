@@ -10,6 +10,10 @@
     "type": "git",
     "url": "git://github.com/gmarty/SCD.js.git"
   },
+  "dependencies": {
+    "grunt": "~0.3.14",
+    "grunt-closure-compiler": "~0.0.10"
+  },
   "keywords": [
     "video",
     "HTML5",

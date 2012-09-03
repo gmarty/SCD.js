@@ -1,7 +1,11 @@
-SCD.js
-======
+# SCD.js
+
 Pixel based video scene change detection in JavaScript.
 
 Base video scene (or shot) change detection written in JavaScript.
-See index.html for an example.
+
+See `index.html` for an example.
+
+## Note
+
 SCD.js is subject to same domain policy and only works for video hosted on the same domain.

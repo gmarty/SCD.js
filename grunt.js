@@ -12,7 +12,7 @@ module.exports = function(grunt) {
           'src/scd.js',
           'src/exports.js'
         ],
-        jsOutputFile: 'min/scd.min.js',
+        jsOutputFile: 'build/scd.min.js',
         options: {
           compilation_level: 'ADVANCED_OPTIMIZATIONS',
           language_in: 'ECMASCRIPT5_STRICT',
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
       // Debug script
       debug: {
         js: '<config:closure-compiler.prod.js>',
-        jsOutputFile: 'min/scd.debug.js',
+        jsOutputFile: 'build/scd.debug.js',
         options: {
           compilation_level: 'ADVANCED_OPTIMIZATIONS',
           language_in: 'ECMASCRIPT5_STRICT',

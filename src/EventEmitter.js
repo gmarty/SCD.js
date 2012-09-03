@@ -46,7 +46,7 @@ var EventEmitter = function() {
 	 *
 	 * @param {String} eventName Name of the event to assign the listener to.
 	 * @param {Function} listener Function to be executed when the specified event is emitted.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance['addListener'] = function(eventName, listener) {
 		// Check if we currently have a listener array for the specified event
@@ -71,7 +71,7 @@ var EventEmitter = function() {
 	 *
 	 * @param {String} eventName Name of the event to assign the listener to.
 	 * @param {Function} listener Function to be executed when the specified event is emitted.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance.on = instance['addListener'];
 
@@ -80,7 +80,7 @@ var EventEmitter = function() {
 	 *
 	 * @param {String} eventName Name of the event to execute the listeners of.
 	 * @param {Mixed} arguments You can pass as many arguments as you want after the event name. These will be passed to the listeners.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance.emit = function(eventName) {
 		// Check if we currently have a listener array for the specified event
@@ -102,7 +102,7 @@ var EventEmitter = function() {
 	 * Returns an array of listeners for the specified event name
 	 *
 	 * @param {String} eventName Name of the event to get the listeners for.
-	 * @return {Array} An array of listeners for the specified event
+	 * @return {Array} An array of listeners for the specified event.
 	 */
 	instance.listeners = function(eventName) {
 		// Check if we currently have a listener array for the specified event
@@ -122,7 +122,7 @@ var EventEmitter = function() {
 	 *
 	 * @param {String} eventName Name of the event to assign the listener to.
 	 * @param {Function} listener Function to be executed when the specified event is emitted.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance.once = function(eventName, listener) {
 		// Create the wrapper function
@@ -146,7 +146,7 @@ var EventEmitter = function() {
 	 *
 	 * @param {String} eventName Name of the event to remove the listener from.
 	 * @param {Function} listener Listener function to be removed.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance.removeListener = function(eventName, listener) {
 		// Check if we currently have a listener array for the specified event
@@ -173,7 +173,7 @@ var EventEmitter = function() {
 	 * Removes all listeners from the specified event
 	 *
 	 * @param {String} eventName Name of the event to remove the listeners from.
-	 * @return {Object} The current instance of EventEmitter to allow chaining
+	 * @return {Object} The current instance of EventEmitter to allow chaining.
 	 */
 	instance.removeAllListeners = function(eventName) {
 		// Replace the listener array with an empty array

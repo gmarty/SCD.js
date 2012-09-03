@@ -62,7 +62,8 @@ function $EventEmitter$$() {
   }
 }
 ;/*
- SCD.js - Pixel based video scene change detection in JavaScript
+ SCD.js - Pixel based video scene change detection in JavaScript.
+
  https://github.com/gmarty/SCD.js
 
  Copyright 2011-2012 Guillaume Marty

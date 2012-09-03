@@ -1,5 +1,6 @@
 /**
- @preserve SCD.js - Pixel based video scene change detection in JavaScript
+ @preserve SCD.js - Pixel based video scene change detection in JavaScript.
+
  https://github.com/gmarty/SCD.js
 
  Copyright 2011-2012 Guillaume Marty
@@ -17,11 +18,14 @@
  limitations under the License.
  */
 
+
 /**
  * @define {boolean} DEBUG is used to strip debugging code at compile time.
  * Just supply --define='DEBUG=false' to Closure Compiler.
  */
 var DEBUG = true;
+
+
 
 /**
  * Perform a scene change detection process on a video tag.

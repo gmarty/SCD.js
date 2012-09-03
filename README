@@ -1,6 +1,6 @@
 SCD.js
 ======
-Pixel based scene change detection in JavaScript.
+Pixel based video scene change detection in JavaScript.
 
 Base video scene (or shot) change detection written in JavaScript.
 See index.html for an example.

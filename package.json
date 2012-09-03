@@ -1,0 +1,23 @@
+{
+  "name": "SCD.js",
+  "version": "0.0.1",
+  "description": "Pixel based video scene change detection in JavaScript",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gmarty/SCD.js.git"
+  },
+  "keywords": [
+    "video",
+    "HTML5",
+    "scene detection",
+    "scene change detection",
+    "shot change detection",
+    "shot detection"
+  ],
+  "author": "Guillaume Marty",
+  "license": "GPL"
+}

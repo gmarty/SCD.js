@@ -24,14 +24,12 @@ div.scd-debug b {
 <input type="button" value="Pause" id="pause">
 <input type="button" value="Stop" id="stop">
 <video id="video" controls>
-    <source src="samples/video.ogv" type='video/ogg; codecs="theora, vorbis"'>
-    <source src="samples/video.webm" type='video/webm; codecs="vp8, vorbis"'>
+  <source src="video/video.webm" type='video/webm; codecs="vp8, vorbis"'>
 </video>
 <div id="scenes">
   <h2>Detected scenes first frame</h2>
 </div>
-<script src="src/EventEmitter.min.js"></script>
-<script src="src/scd.js"></script>
+<script src="min/scd.debug.js"></script>
 <script>
 var video = document.getElementById("video");
 var scd = new Scd(video, {

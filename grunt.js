@@ -8,9 +8,9 @@ module.exports = function(grunt) {
       // Production script
       prod: {
         js: [
-          'js/EventEmitter.js',
-          'js/scd.js',
-          'js/exports.js'
+          'src/EventEmitter.js',
+          'src/scd.js',
+          'src/exports.js'
         ],
         jsOutputFile: 'min/scd.min.js',
         options: {

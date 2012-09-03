@@ -139,7 +139,7 @@ function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
     throw Error("Native video element not supported");
   }
   if(!$videoEl$$ || 0 > $videoEl$$.constructor.toString().indexOf("HTMLVideoElement")) {
-    throw"Inputed element is not a video element.";
+    throw Error("Inputed element is not a video element.");
   }
   var $that$$ = this, $_mode$$ = "FastForwardMode", $_step_width$$ = 50, $_step_height$$ = 50, $_minSceneDuration$$ = 0.25, $_threshold$$ = 25, $_debug$$ = $JSCompiler_alias_FALSE$$, $maxDiff100$$ = Math.sqrt(195075) / 100, $_currentTime$$ = 0, $_lastCurrentTime$$ = 0, $_width$$ = 0, $_height$$ = 0, $_controls$$ = $videoEl$$.controls, $_canvasA$$ = document.createElement("canvas"), $_canvasB$$ = document.createElement("canvas"), $_ctxA$$ = $_canvasA$$.getContext("2d"), $_ctxB$$ = $_canvasB$$.getContext("2d"), 
   $_stop$$ = $JSCompiler_alias_FALSE$$, $_step_sq$$, $_step_sq_plus$$, $_debugContainer$$, $_events$$, $getMedian$$;

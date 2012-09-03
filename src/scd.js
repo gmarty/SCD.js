@@ -1,19 +1,27 @@
 /**
- * @preserve SCD.js.
- *
- * Copyright 2011, Guillaume Marty (edo999@gmail.com)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * https://github.com/gmarty/SCD.js
- */
+ @preserve SCD.js - Pixel based video scene change detection in JavaScript
+ https://github.com/gmarty/SCD.js
 
+ Copyright 2011-2012 Guillaume Marty
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 /**
  * @define {boolean} DEBUG is used to strip debugging code at compile time.
  * Just supply --define='DEBUG=false' to Closure Compiler.
  */
 var DEBUG = true;
-
-
 
 /**
  * Perform a scene change detection process on a video tag.

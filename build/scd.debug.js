@@ -135,6 +135,9 @@ function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
     $_canvasA$$.height = $_canvasB$$.height = $_step_height$$;
     $videoEl$$.removeEventListener("durationchange", $getVideoData$$, $JSCompiler_alias_FALSE$$)
   }
+  if(!document.createElement("video").canPlayType) {
+    throw Error("Native video element not supported");
+  }
   if(!$videoEl$$ || 0 > $videoEl$$.constructor.toString().indexOf("HTMLVideoElement")) {
     throw"Inputed element is not a video element.";
   }

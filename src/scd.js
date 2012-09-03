@@ -35,6 +35,12 @@ var DEBUG = true;
  * @param {function()=} callback The callback function executed when process is complete.
  */
 var Scd = function(videoEl, options, callback) {
+  // Detect support for video element.
+  var elem = document.createElement('video');
+  if (!elem.canPlayType) {
+    throw new Error('Native video element not supported');
+  }
+
   if (!videoEl || videoEl.constructor.toString().indexOf('HTMLVideoElement') < 0) {
     throw 'Inputed element is not a video element.';
   } else {

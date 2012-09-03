@@ -6,7 +6,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     'closure-compiler': {
       // Production script
-      debug: {
+      prod: {
         js: [
           'js/EventEmitter.js',
           'js/scd.js',
@@ -19,23 +19,25 @@ module.exports = function(grunt) {
           summary_detail_level: 3,
           warning_level: 'VERBOSE',
           define: [
-            '"DEBUG=true"'
+            '"DEBUG=false"'
           ]
         }
       },
 
       // Debug script
-      no_debug: {
-        js: '<config:closure-compiler.debug.js>',
-        jsOutputFile: 'min/scd.min-nodebug.js',
+      debug: {
+        js: '<config:closure-compiler.prod.js>',
+        jsOutputFile: 'min/scd.debug.js',
         options: {
           compilation_level: 'ADVANCED_OPTIMIZATIONS',
           language_in: 'ECMASCRIPT5_STRICT',
           summary_detail_level: 3,
           warning_level: 'VERBOSE',
           define: [
-            '"DEBUG=false"'
-          ]
+            '"DEBUG=true"'
+          ],
+          debug: true,
+          formatting: 'PRETTY_PRINT'
         }
       }
     }
@@ -43,6 +45,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'closure-compiler:debug closure-compiler:no_debug');
+  grunt.registerTask('default', 'closure-compiler:prod closure-compiler:debug');
 
 };

@@ -333,13 +333,14 @@ var Scd = function(videoEl, options, callback) {
       videoEl.play();
     };
 
-    getMedian = !(_step_sq % 2) ? function(numArray) {
-      numArray.sort(compare);
-      return numArray[_step_sq / 2];
-    } : function(numArray) {
-      numArray.sort(compare);
-      return (numArray[_step_sq_plus - 0.5] + numArray[_step_sq_plus + 0.5]) / 2;
-    };
+    var getMedianBody = 'numArray.sort(function(a,b){return a-b});';
+    if ((_step_sq % 2) == 0) {
+      getMedianBody +='return numArray[' + (_step_sq / 2) + ']';
+    } else {
+      getMedianBody += 'return (numArray[' + ((_step_sq / 2) - 0.5) + ']+numArray[' + ((_step_sq / 2) + 0.5) + '])/2';
+    }
+
+    getMedian = new Function('numArray', getMedianBody);
   };
 
   /**
@@ -507,16 +508,6 @@ var Scd = function(videoEl, options, callback) {
    * @private
    */
   var getMedian;
-
-  /**
-   * Comparison function for Array.sort() used in getMedian().
-   * @param {number} a The first value to compare.
-   * @param {number} b The second value to compare.
-   * @return {number} The difference between a and b.
-   */
-  var compare = function(a, b) {
-    return a - b;
-  };
 
   Scd.prototype['events'] = _events = new EventEmitter();
 

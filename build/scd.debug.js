@@ -80,10 +80,7 @@ function $EventEmitter$$() {
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
-  function $compare$$($a$$1$$, $b$$1$$) {
-    return $a$$1$$ - $b$$1$$
-  }
+function $Scd$$($videoEl$$, $getMedianBody$$inline_14_options$$2$$, $callback$$32$$) {
   function $detectSceneChange$$() {
     if(!$_stop$$) {
       if("FastForwardMode" === $_mode$$ && ($videoEl$$.ended || $_currentTime$$ > $videoEl$$.duration)) {
@@ -142,18 +139,17 @@ function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
     throw Error("Inputed element is not a video element.");
   }
   var $that$$ = this, $_mode$$ = "FastForwardMode", $_step_width$$ = 50, $_step_height$$ = 50, $_minSceneDuration$$ = 0.25, $_threshold$$ = 25, $_debug$$ = $JSCompiler_alias_FALSE$$, $maxDiff100$$ = Math.sqrt(195075) / 100, $_currentTime$$ = 0, $_lastCurrentTime$$ = 0, $_width$$ = 0, $_height$$ = 0, $_controls$$ = $videoEl$$.controls, $_canvasA$$ = document.createElement("canvas"), $_canvasB$$ = document.createElement("canvas"), $_ctxA$$ = $_canvasA$$.getContext("2d"), $_ctxB$$ = $_canvasB$$.getContext("2d"), 
-  $_stop$$ = $JSCompiler_alias_FALSE$$, $_step_sq$$, $_step_sq_plus$$, $_debugContainer$$, $_events$$, $getMedian$$;
+  $_stop$$ = $JSCompiler_alias_FALSE$$, $_step_sq$$, $_debugContainer$$, $_events$$, $getMedian$$;
   $Scd$$.prototype.events = $_events$$ = new $EventEmitter$$;
-  $options$$2$$ = $options$$2$$ || {};
-  $options$$2$$.mode && "PlaybackMode" === $options$$2$$.mode && ($_mode$$ = $options$$2$$.mode);
-  $options$$2$$.step_width && $options$$2$$.step_height ? ($_step_width$$ = parseInt($options$$2$$.step_width, 10), $_step_height$$ = parseInt($options$$2$$.step_height, 10)) : $options$$2$$.step && ($_step_width$$ = $_step_height$$ = parseInt($options$$2$$.step, 10));
-  $options$$2$$.minSceneDuration && ($_minSceneDuration$$ = parseFloat($options$$2$$.minSceneDuration));
-  $options$$2$$.threshold && ($_threshold$$ = parseFloat($options$$2$$.threshold));
-  $options$$2$$.debug && ($_debug$$ = Boolean($options$$2$$.debug));
+  $getMedianBody$$inline_14_options$$2$$ = $getMedianBody$$inline_14_options$$2$$ || {};
+  $getMedianBody$$inline_14_options$$2$$.mode && "PlaybackMode" === $getMedianBody$$inline_14_options$$2$$.mode && ($_mode$$ = $getMedianBody$$inline_14_options$$2$$.mode);
+  $getMedianBody$$inline_14_options$$2$$.step_width && $getMedianBody$$inline_14_options$$2$$.step_height ? ($_step_width$$ = parseInt($getMedianBody$$inline_14_options$$2$$.step_width, 10), $_step_height$$ = parseInt($getMedianBody$$inline_14_options$$2$$.step_height, 10)) : $getMedianBody$$inline_14_options$$2$$.step && ($_step_width$$ = $_step_height$$ = parseInt($getMedianBody$$inline_14_options$$2$$.step, 10));
+  $getMedianBody$$inline_14_options$$2$$.minSceneDuration && ($_minSceneDuration$$ = parseFloat($getMedianBody$$inline_14_options$$2$$.minSceneDuration));
+  $getMedianBody$$inline_14_options$$2$$.threshold && ($_threshold$$ = parseFloat($getMedianBody$$inline_14_options$$2$$.threshold));
+  $getMedianBody$$inline_14_options$$2$$.debug && ($_debug$$ = Boolean($getMedianBody$$inline_14_options$$2$$.debug));
   $_lastCurrentTime$$ = $_minSceneDuration$$;
   $_threshold$$ *= $maxDiff100$$;
   $_step_sq$$ = $_step_width$$ * $_step_height$$;
-  $_step_sq_plus$$ = ($_step_sq$$ + 1) / 2 - 1;
   $_debug$$ && ($_debugContainer$$ = document.createElement("div"), $_debugContainer$$.className = "scd-debug", document.getElementsByTagName("body")[0].appendChild($_debugContainer$$));
   3 > $videoEl$$.readyState ? $videoEl$$.addEventListener("durationchange", $getVideoData$$, $JSCompiler_alias_FALSE$$) : $getVideoData$$();
   $Scd$$.prototype.start = "FastForwardMode" === $_mode$$ ? function() {
@@ -172,13 +168,8 @@ function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
       $videoEl$$.play()
     }
   };
-  $getMedian$$ = !($_step_sq$$ % 2) ? function($numArray$$inline_14$$) {
-    $numArray$$inline_14$$.sort($compare$$);
-    return $numArray$$inline_14$$[$_step_sq$$ / 2]
-  } : function($numArray$$inline_15$$) {
-    $numArray$$inline_15$$.sort($compare$$);
-    return($numArray$$inline_15$$[$_step_sq_plus$$ - 0.5] + $numArray$$inline_15$$[$_step_sq_plus$$ + 0.5]) / 2
-  };
+  $getMedianBody$$inline_14_options$$2$$ = "numArray.sort(function(a,b){return a-b});";
+  $getMedian$$ = new Function("numArray", 0 == $_step_sq$$ % 2 ? $getMedianBody$$inline_14_options$$2$$ + ("return numArray[" + $_step_sq$$ / 2 + "]") : $getMedianBody$$inline_14_options$$2$$ + ("return (numArray[" + ($_step_sq$$ / 2 - 0.5) + "]+numArray[" + ($_step_sq$$ / 2 + 0.5) + "])/2"));
   $Scd$$.prototype.pause = function $$Scd$$$$pause$() {
     if(!$_stop$$) {
       if($_mode$$ === "FastForwardMode") {

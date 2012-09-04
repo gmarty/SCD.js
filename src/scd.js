@@ -333,9 +333,9 @@ var Scd = function(videoEl, options, callback) {
       videoEl.play();
     };
 
-    getMedian = (_step_sq % 2) ? function(numArray) {
+    getMedian = !(_step_sq % 2) ? function(numArray) {
       numArray.sort(compare);
-      return numArray[_step_sq_plus];
+      return numArray[_step_sq / 2];
     } : function(numArray) {
       numArray.sort(compare);
       return (numArray[_step_sq_plus - 0.5] + numArray[_step_sq_plus + 0.5]) / 2;

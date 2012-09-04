@@ -172,9 +172,9 @@ function $Scd$$($videoEl$$, $options$$2$$, $callback$$32$$) {
       $videoEl$$.play()
     }
   };
-  $getMedian$$ = $_step_sq$$ % 2 ? function($numArray$$inline_14$$) {
+  $getMedian$$ = !($_step_sq$$ % 2) ? function($numArray$$inline_14$$) {
     $numArray$$inline_14$$.sort($compare$$);
-    return $numArray$$inline_14$$[$_step_sq_plus$$]
+    return $numArray$$inline_14$$[$_step_sq$$ / 2]
   } : function($numArray$$inline_15$$) {
     $numArray$$inline_15$$.sort($compare$$);
     return($numArray$$inline_15$$[$_step_sq_plus$$ - 0.5] + $numArray$$inline_15$$[$_step_sq_plus$$ + 0.5]) / 2

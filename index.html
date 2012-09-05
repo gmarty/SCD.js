@@ -69,14 +69,14 @@ video {
 
 <script src="build/scd.debug.js"></script>
 <script>
-var video = document.getElementById("video");
+var video = document.getElementById('video');
 var scd = new Scd(video, {
 		mode: 'PlaybackMode',
 		step_width: 50,
 		step_height: 37,
 		debug: 1
-	}, function(){
-    console.log(scd.sceneTimecodes.join(", "));
+	}, function(sceneTimecodes){
+    console.log(sceneTimecodes.join(', '));
 });
 
 video.addEventListener('scenechange', function(e) {
@@ -85,12 +85,12 @@ video.addEventListener('scenechange', function(e) {
 
 // Attach click events to buttons.
 document.getElementById('start').addEventListener('click', function() {
-  var debugContainer = document.getElementById("__scd-debug");
+  var debugContainer = document.getElementById('__scd-debug');
   while(debugContainer.firstChild)
     debugContainer.removeChild(debugContainer.firstChild);
 });
 
-["start", "pause", "stop"].forEach(function(element) {
+['start', 'pause', 'stop'].forEach(function(element) {
   document.getElementById(element).addEventListener('click', scd[element]);
 });
 </script>

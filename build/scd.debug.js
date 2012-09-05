@@ -56,7 +56,7 @@ function $Scd$$($videoEl$$, $_step_sq_options$$2$$, $callback$$32$$) {
     }
   }
   function $videoEndedEvent$$() {
-    $callback$$32$$ && $callback$$32$$();
+    $callback$$32$$ && $callback$$32$$($that$$.sceneTimecodes);
     $that$$.stop()
   }
   function $playbackModeEvent$$() {

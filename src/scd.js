@@ -423,7 +423,7 @@ var Scd = function(videoEl, options, callback) {
         tmpContainer.appendChild(document.createElement('br'));
         tmpContainer.appendChild(tmpCanvasA);
         tmpContainer.appendChild(document.createElement('br'));
-        tmpContainer.appendChild(document.createTextNode('max: ' + Math.round(diff[2] / maxDiff100) + '%, avg: ' + Math.round(diff[1] / maxDiff100) + '%, med: ' + Math.round(diff[0] / maxDiff100) + '%, min: ' + Math.round(diff[3] / maxDiff100) + '%'));
+        tmpContainer.appendChild(document.createTextNode('med: ' + Math.round(diff[0] / maxDiff100) + '%'));
         _debugContainer.appendChild(tmpContainer);
       }
     }
@@ -456,9 +456,9 @@ var Scd = function(videoEl, options, callback) {
     med = getMedian(diff);
     if (_debug) {
       // When debug is on, full data are computed and returned...
-      avg = getAverage(diff);
-      max = getMaxOfArray(diff);
-      min = getMinOfArray(diff);
+      //avg = getAverage(diff);
+      //max = getMaxOfArray(diff);
+      //min = getMinOfArray(diff);
       return [med, avg, max, min];
     } else {
       // Otherwise, only the median value is returned.

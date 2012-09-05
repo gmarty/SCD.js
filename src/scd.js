@@ -216,13 +216,6 @@ var Scd = function(videoEl, options, callback) {
   var half_height;
 
   /**
-   * The property holding the event emitter.
-   * @type {Object}
-   * @private
-   */
-  var _events;
-
-  /**
    * Expose data about the video when available.
    * @private
    */
@@ -408,9 +401,10 @@ var Scd = function(videoEl, options, callback) {
     var diff = computeDifferences(_ctxA, _ctxB);
 
     if (diff[0] > _threshold) {
-
-      // Trigger a cut event.
-      _events.emit('scenecut');
+      // Trigger a `scenechange` event.
+      var _sceneChangeEvent = document.createEvent('Event');
+      _sceneChangeEvent.initEvent('scenechange', true, true);
+      videoEl.dispatchEvent(_sceneChangeEvent);
 
       that['sceneTimecodes'].push(_currentTime);
       if (_debug) {
@@ -517,8 +511,6 @@ var Scd = function(videoEl, options, callback) {
    * @private
    */
   var getMedian;
-
-  Scd.prototype['events'] = _events = new EventEmitter();
 
   init();
 

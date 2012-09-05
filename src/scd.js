@@ -344,7 +344,7 @@ var Scd = function(videoEl, options, callback) {
 
     var getMedianBody = 'numArray.sort(function(a,b){return a-b});';
     if ((_step_sq % 2) == 0) {
-      getMedianBody +='return numArray[' + (_step_sq / 2) + ']';
+      getMedianBody += 'return numArray[' + (_step_sq / 2) + ']';
     } else {
       getMedianBody += 'return (numArray[' + ((_step_sq / 2) - 0.5) + ']+numArray[' + ((_step_sq / 2) + 0.5) + '])/2';
     }
@@ -419,7 +419,7 @@ var Scd = function(videoEl, options, callback) {
         tmpCanvasA.width = half_width;
         tmpCanvasA.height = half_height;
         tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight, 0, 0, half_width, half_height);
-        tmpContainer.appendChild(document.createTextNode('@ ' + _currentTime.toFixed(4)));
+        tmpContainer.appendChild(document.createTextNode(formatTime(_currentTime)));
         tmpContainer.appendChild(document.createElement('br'));
         tmpContainer.appendChild(tmpCanvasA);
         tmpContainer.appendChild(document.createElement('br'));
@@ -557,6 +557,21 @@ var Scd = function(videoEl, options, callback) {
 
     _stop = true;
   };
+
+  // Helpers
+  function formatTime(num) {
+    var hours = Math.floor(num / 3600);
+    var minutes = Math.floor((num - (hours * 3600)) / 60);
+    var seconds = (num - (hours * 3600) - (minutes * 60)).toFixed(2);
+
+    if (hours < 10)
+      hours = '0' + hours;
+    if (minutes < 10)
+      minutes = '0' + minutes;
+    if (seconds < 10)
+      seconds = '0' + seconds;
+    return hours + ':' + minutes + ':' + seconds;
+  }
 };
 
 

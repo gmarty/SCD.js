@@ -37,12 +37,12 @@ function $EventEmitter$$() {
   $instance$$.removeListener = function $$instance$$$removeListener$($eventName$$4$$, $listener$$31$$) {
     if($listeners$$[$eventName$$4$$]) {
       a: {
-        var $stack$$inline_0$$ = $listeners$$[$eventName$$4$$];
-        if($stack$$inline_0$$.indexOf) {
-          $index$$44$$ = $stack$$inline_0$$.indexOf($listener$$31$$)
+        var $stack$$inline_1$$ = $listeners$$[$eventName$$4$$];
+        if($stack$$inline_1$$.indexOf) {
+          $index$$44$$ = $stack$$inline_1$$.indexOf($listener$$31$$)
         }else {
-          for($i$$1$$ = 0;$i$$1$$ < $stack$$inline_0$$.length;$i$$1$$ += 1) {
-            if($stack$$inline_0$$[$i$$1$$] === $listener$$31$$) {
+          for($i$$1$$ = 0;$i$$1$$ < $stack$$inline_1$$.length;$i$$1$$ += 1) {
+            if($stack$$inline_1$$[$i$$1$$] === $listener$$31$$) {
               $index$$44$$ = $i$$1$$;
               break a
             }
@@ -87,17 +87,32 @@ function $Scd$$($videoEl$$, $_step_sq_options$$2$$, $callback$$32$$) {
         $videoEndedEvent$$()
       }else {
         $_ctxA$$.drawImage($videoEl$$, 0, 0, $_width$$, $_height$$, 0, 0, $_step_width$$, $_step_height$$);
-        var $diff_diff$$inline_5_med$$inline_9$$;
-        $diff_diff$$inline_5_med$$inline_9$$ = [];
-        var $colorsA$$inline_6_tmpContainer$$ = $_ctxA$$.getImageData(0, 0, $_step_width$$, $_step_height$$).data, $colorsB$$inline_7_tmpCanvasA$$ = $_ctxB$$.getImageData(0, 0, $_step_width$$, $_step_height$$).data, $i$$inline_8$$ = $colorsA$$inline_6_tmpContainer$$.length;
+        var $diff_diff$$inline_6_med$$inline_10$$;
+        $diff_diff$$inline_6_med$$inline_10$$ = [];
+        var $colorsA$$inline_7_tmpContainer$$ = $_ctxA$$.getImageData(0, 0, $_step_width$$, $_step_height$$).data, $colorsB$$inline_8_tmpCanvasA$$ = $_ctxB$$.getImageData(0, 0, $_step_width$$, $_step_height$$).data, $hours$$inline_13_i$$inline_9$$ = $colorsA$$inline_7_tmpContainer$$.length;
         do {
-          $diff_diff$$inline_5_med$$inline_9$$.push(Math.sqrt(Math.pow($colorsA$$inline_6_tmpContainer$$[$i$$inline_8$$ - 4] - $colorsB$$inline_7_tmpCanvasA$$[$i$$inline_8$$ - 4], 2) + Math.pow($colorsA$$inline_6_tmpContainer$$[$i$$inline_8$$ + -3] - $colorsB$$inline_7_tmpCanvasA$$[$i$$inline_8$$ + -3], 2) + Math.pow($colorsA$$inline_6_tmpContainer$$[$i$$inline_8$$ + -2] - $colorsB$$inline_7_tmpCanvasA$$[$i$$inline_8$$ + -2], 2)))
-        }while($i$$inline_8$$ -= 4);
-        $diff_diff$$inline_5_med$$inline_9$$ = $getMedian$$($diff_diff$$inline_5_med$$inline_9$$);
-        $diff_diff$$inline_5_med$$inline_9$$ = $_debug$$ ? [$diff_diff$$inline_5_med$$inline_9$$, void 0, void 0, void 0] : [$diff_diff$$inline_5_med$$inline_9$$];
-        $diff_diff$$inline_5_med$$inline_9$$[0] > $_threshold$$ && ($_events$$.$emit$("scenecut"), $that$$.sceneTimecodes.push($_currentTime$$), $_debug$$ && ($colorsA$$inline_6_tmpContainer$$ = document.createElement("div"), $colorsB$$inline_7_tmpCanvasA$$ = document.createElement("canvas"), $colorsB$$inline_7_tmpCanvasA$$.width = $half_width$$, $colorsB$$inline_7_tmpCanvasA$$.height = $half_height$$, $colorsB$$inline_7_tmpCanvasA$$.getContext("2d").drawImage($videoEl$$, 0, 0, $videoEl$$.videoWidth, 
-        $videoEl$$.videoHeight, 0, 0, $half_width$$, $half_height$$), $colorsA$$inline_6_tmpContainer$$.appendChild(document.createTextNode("@ " + $_currentTime$$.toFixed(4))), $colorsA$$inline_6_tmpContainer$$.appendChild(document.createElement("br")), $colorsA$$inline_6_tmpContainer$$.appendChild($colorsB$$inline_7_tmpCanvasA$$), $colorsA$$inline_6_tmpContainer$$.appendChild(document.createElement("br")), $colorsA$$inline_6_tmpContainer$$.appendChild(document.createTextNode("med: " + Math.round($diff_diff$$inline_5_med$$inline_9$$[0] / 
-        $maxDiff100$$) + "%")), $_debugContainer$$.appendChild($colorsA$$inline_6_tmpContainer$$)));
+          $diff_diff$$inline_6_med$$inline_10$$.push(Math.sqrt(Math.pow($colorsA$$inline_7_tmpContainer$$[$hours$$inline_13_i$$inline_9$$ - 4] - $colorsB$$inline_8_tmpCanvasA$$[$hours$$inline_13_i$$inline_9$$ - 4], 2) + Math.pow($colorsA$$inline_7_tmpContainer$$[$hours$$inline_13_i$$inline_9$$ + -3] - $colorsB$$inline_8_tmpCanvasA$$[$hours$$inline_13_i$$inline_9$$ + -3], 2) + Math.pow($colorsA$$inline_7_tmpContainer$$[$hours$$inline_13_i$$inline_9$$ + -2] - $colorsB$$inline_8_tmpCanvasA$$[$hours$$inline_13_i$$inline_9$$ + 
+          -2], 2)))
+        }while($hours$$inline_13_i$$inline_9$$ -= 4);
+        $diff_diff$$inline_6_med$$inline_10$$ = $getMedian$$($diff_diff$$inline_6_med$$inline_10$$);
+        $diff_diff$$inline_6_med$$inline_10$$ = $_debug$$ ? [$diff_diff$$inline_6_med$$inline_10$$, void 0, void 0, void 0] : [$diff_diff$$inline_6_med$$inline_10$$];
+        if($diff_diff$$inline_6_med$$inline_10$$[0] > $_threshold$$ && ($_events$$.$emit$("scenecut"), $that$$.sceneTimecodes.push($_currentTime$$), $_debug$$)) {
+          $colorsA$$inline_7_tmpContainer$$ = document.createElement("div");
+          $colorsB$$inline_8_tmpCanvasA$$ = document.createElement("canvas");
+          $colorsB$$inline_8_tmpCanvasA$$.width = $half_width$$;
+          $colorsB$$inline_8_tmpCanvasA$$.height = $half_height$$;
+          $colorsB$$inline_8_tmpCanvasA$$.getContext("2d").drawImage($videoEl$$, 0, 0, $videoEl$$.videoWidth, $videoEl$$.videoHeight, 0, 0, $half_width$$, $half_height$$);
+          var $hours$$inline_13_i$$inline_9$$ = Math.floor($_currentTime$$ / 3600), $minutes$$inline_14$$ = Math.floor(($_currentTime$$ - 3600 * $hours$$inline_13_i$$inline_9$$) / 60), $seconds$$inline_15$$ = ($_currentTime$$ - 3600 * $hours$$inline_13_i$$inline_9$$ - 60 * $minutes$$inline_14$$).toFixed(2);
+          10 > $hours$$inline_13_i$$inline_9$$ && ($hours$$inline_13_i$$inline_9$$ = "0" + $hours$$inline_13_i$$inline_9$$);
+          10 > $minutes$$inline_14$$ && ($minutes$$inline_14$$ = "0" + $minutes$$inline_14$$);
+          10 > $seconds$$inline_15$$ && ($seconds$$inline_15$$ = "0" + $seconds$$inline_15$$);
+          $colorsA$$inline_7_tmpContainer$$.appendChild(document.createTextNode($hours$$inline_13_i$$inline_9$$ + ":" + $minutes$$inline_14$$ + ":" + $seconds$$inline_15$$));
+          $colorsA$$inline_7_tmpContainer$$.appendChild(document.createElement("br"));
+          $colorsA$$inline_7_tmpContainer$$.appendChild($colorsB$$inline_8_tmpCanvasA$$);
+          $colorsA$$inline_7_tmpContainer$$.appendChild(document.createElement("br"));
+          $colorsA$$inline_7_tmpContainer$$.appendChild(document.createTextNode("med: " + Math.round($diff_diff$$inline_6_med$$inline_10$$[0] / $maxDiff100$$) + "%"));
+          $_debugContainer$$.appendChild($colorsA$$inline_7_tmpContainer$$)
+        }
         $_ctxB$$.drawImage($_canvasA$$, 0, 0, $_step_width$$, $_step_height$$, 0, 0, $_step_width$$, $_step_height$$)
       }
     }
@@ -159,8 +174,8 @@ function $Scd$$($videoEl$$, $_step_sq_options$$2$$, $callback$$32$$) {
       $videoEl$$.play()
     }
   };
-  var $getMedianBody$$inline_11$$ = "numArray.sort(function(a,b){return a-b});";
-  $getMedian$$ = new Function("numArray", 0 == $_step_sq_options$$2$$ % 2 ? $getMedianBody$$inline_11$$ + ("return numArray[" + $_step_sq_options$$2$$ / 2 + "]") : $getMedianBody$$inline_11$$ + ("return (numArray[" + ($_step_sq_options$$2$$ / 2 - 0.5) + "]+numArray[" + ($_step_sq_options$$2$$ / 2 + 0.5) + "])/2"));
+  var $getMedianBody$$inline_17$$ = "numArray.sort(function(a,b){return a-b});";
+  $getMedian$$ = new Function("numArray", 0 == $_step_sq_options$$2$$ % 2 ? $getMedianBody$$inline_17$$ + ("return numArray[" + $_step_sq_options$$2$$ / 2 + "]") : $getMedianBody$$inline_17$$ + ("return (numArray[" + ($_step_sq_options$$2$$ / 2 - 0.5) + "]+numArray[" + ($_step_sq_options$$2$$ / 2 + 0.5) + "])/2"));
   $Scd$$.prototype.pause = function $$Scd$$$$pause$() {
     if(!$_stop$$) {
       if($_mode$$ === "FastForwardMode") {

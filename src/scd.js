@@ -1,7 +1,6 @@
 /**
  @preserve SCD.js - Pixel based video scene change detection in JavaScript.
-
- https://github.com/gmarty/SCD.js
+ https://github.com/gmarty/SCD.js.
 
  Copyright 2011-2012 Guillaume Marty
 
@@ -26,129 +25,77 @@
 var DEBUG = true;
 
 
-
 /**
- * Perform a scene change detection process on a video tag.
- * @constructor
+ * Perform a scene change detection on a video element.
  * @param {HTMLVideoElement} videoEl The video element to process.
  * @param {Object.<string, *>=} options An array of options.
- * @param {function()=} callback The callback function executed when process is complete.
+ * @param {function(Array.<number>)=} callback The callback function executed when process is over.
  */
-var Scd = function(videoEl, options, callback) {
+function Scd(videoEl, options, callback) {
   // Detect support for video element.
-  var elem = document.createElement('video');
-  if (!elem.canPlayType) {
+  if (!document.createElement('video').canPlayType) {
     throw Error('Native video element not supported');
   }
 
+  // Check that videoEl is an HTML video element.
   if (!videoEl || videoEl.constructor.toString().indexOf('HTMLVideoElement') < 0) {
-    throw Error('Inputed element is not a video element.');
+    throw Error('Input element is not a video element.');
   } else {
     videoEl = /** @type {HTMLVideoElement} */ (videoEl);
   }
 
-  // Private properties.
-  /**
-   * @type {Scd}
-   * @private
-   */
-  var that = this;
-
-  /**
-   * Default mode is FastForward.
-   * @type {string}
-   * @private
-   */
-  var _mode = 'FastForwardMode';
-
-  /**
-   * The width at which the frames will be resized down to for comparison.
-   * @type {number}
-   * @private
-   */
-  var _step_width = 50;
-
-  /**
-   * The height at which the frames will be resized down to for comparison.
-   * @type {number}
-   * @private
-   */
-  var _step_height = 50;
-
-  /**
-   * The minimal duration of a scene in s. 2 consecutive scene changes can be detected within this interval.
-   * @type {number}
-   * @private
-   */
-  var _minSceneDuration = 0.25;
-
-  /**
-   * Percentage color difference above which a scene change is detected (0 <= threshold <= 100).
-   * @type {number}
-   * @private
-   */
-  var _threshold = 25;
-
-  /**
-   * Display detected scenes first frame.
-   * @type {boolean}
-   * @private
-   */
-  var _debug = DEBUG && false;
-
-  /**
-   * Maximum color difference possible.
-   * @const
-   * @type {number}
-   */
-  var maxDiff = Math.sqrt(255 * 255 * 3);
-
   /**
    * Maximum color difference possible / 100. Used to speed up calculations on debug.
    * @const
-   * @type {number}
    */
-  var maxDiff100 = maxDiff / 100;
+  var MAX_DIFF_100 = Math.sqrt(255 * 255 * 3) / 100;
 
   /**
-   * Current playback time.
-   * @type {number}
-   * @private
+   * An object for settings.
    */
-  var _currentTime = 0;
-
-  /**
-   * Last current playback time. Used in "PlaybackMode" only.
-   * @type {number}
-   * @private
-   */
-  var _lastCurrentTime = 0;
+  var opts = {
+    mode: 'FastForwardMode',
+    step: 0,
+    step_width: 50,
+    step_height: 50,
+    minSceneDuration: 0.25,
+    threshold: 25 * MAX_DIFF_100,
+    debug: false
+  };
 
   /**
    * Video width.
    * @type {number}
-   * @private
    */
-  var _width = 0;
+  var width = 0;
 
   /**
    * Video height.
    * @type {number}
-   * @private
    */
-  var _height = 0;
+  var height = 0;
 
   /**
    * Initial state of controls attribute of the video tag.
    * @type {boolean}
-   * @private
    */
-  var _controls = videoEl.controls;
+  var controls = videoEl.controls;
+
+  /**
+   * Current playback time.
+   * @type {number}
+   */
+  var currentTime = 0;
+
+  /**
+   * Last current playback time. Used in "PlaybackMode" only.
+   * @type {number}
+   */
+  var lastCurrentTime = 0;
 
   /**
    * Create a new canvas element.
    * @return {HTMLCanvasElement} A new canvas element created.
-   * @private
    */
   var createCanvas = function() {
     return /** @type {HTMLCanvasElement} */ (document.createElement('canvas'));
@@ -157,171 +104,159 @@ var Scd = function(videoEl, options, callback) {
   /**
    * Canvas element of image 1.
    * @type {HTMLCanvasElement}
-   * @private
    */
-  var _canvasA = createCanvas();
+  var canvasA = createCanvas();
 
   /**
    * Canvas element of image 2.
    * @type {HTMLCanvasElement}
-   * @private
    */
-  var _canvasB = createCanvas();
+  var canvasB = createCanvas();
 
   /**
    * Canvas context for image 1.
    * @type {Object}
-   * @private
    */
-  var _ctxA = _canvasA.getContext('2d');
+  var ctxA = canvasA.getContext('2d');
 
   /**
    * Canvas context for image 2.
    * @type {Object}
-   * @private
    */
-  var _ctxB = _canvasB.getContext('2d');
+  var ctxB = canvasB.getContext('2d');
 
   /**
    * Determine if current scene change detection process is stopped.
    * @type {boolean}
-   * @private
    */
-  var _stop = false;
+  var stop = false;
 
   /**
-   * The total number of zones in the video to process. Used to speed up calculation.
-   * @const
+   * The length of the canvas context imageData object. Used to speed up calculation.
    * @type {number}
-   * @private
    */
-  var _step_sq;
-
-  /**
-   * The total number of zones in the video to process + 1 / 2 - 1. Used to speed up calculation.
-   * @const
-   * @type {number}
-   * @private
-   */
-  var _step_sq_plus;
+  var canvasContextImageDataLength;
 
   /**
    * The div element to write debug into.
    * @type {Element}
-   * @private
    */
-  var _debugContainer;
-
-  var half_width;
-  var half_height;
+  var debugContainer;
 
   /**
-   * Expose data about the video when available.
-   * @private
+   * The internal start function.
+   * @type {Function}
    */
-  var getVideoData = function() {
-    // durationchange appears to be the first event triggered by video that exposes width and height.
+  var _start;
 
-    // First we set default values to video tag size (Type set to string to keep Compiler happy).
-    videoEl.width = /** @type {string} */ videoEl.width ? videoEl.width : videoEl.videoWidth;
-    videoEl.height = /** @type {string} */ videoEl.height ? videoEl.height : videoEl.videoHeight;
+  /**
+   * A function that returns the median value of an array.
+   * @type {Function}
+   */
+  var getMedian;
+
+  /**
+   * The time codes of detected scenes relative to the video start time.
+   * @type {Array}
+   */
+  var sceneTimecodes = [];
+
+  // HTMLVideoElement.HAVE_FUTURE_DATA = 3
+  if (videoEl.readyState < 3) {
+    // We don't have enough data, so we'll initialize values when available.
+    // durationchange appears to be the first event triggered by video that exposes width and height.
+    videoEl.addEventListener('durationchange', init, false);
+  } else {
+    // The metadata is already loaded.
+    init();
+  }
+
+  /**
+   * Initialize various settings when video data are available.
+   */
+  function init() {
+    for (var k in options) {
+      switch (k) {
+        case 'mode':
+          opts.mode = '' + options[k];
+          break;
+        case 'step':
+          opts.step = +/** @type {number} */ (options[k]);
+          break;
+        case 'step_width':
+          opts.step_width = +/** @type {number} */ (options[k]);
+          break;
+        case 'step_height':
+          opts.step_height = +/** @type {number} */ (options[k]);
+          break;
+        case 'minSceneDuration':
+          opts.minSceneDuration = +/** @type {number} */ (options[k]);
+          break;
+        case 'threshold':
+          // opts.threshold is set between 0 and MAX_DIFF_100 interval to save on computation later.
+          opts.threshold = +/** @type {number} */ (options[k]) * MAX_DIFF_100;
+          break;
+        case 'debug':
+          if (DEBUG)
+            opts.debug = !!options[k];
+          break;
+      }
+    }
+
+    if (opts.step != 0) {
+      opts.step_width = opts.step_height = opts.step;
+    }
+
+    // First we set default values to video tag size.
+    // Values are annotated as strings to keep Closure Compiler happy.
+    if (!videoEl.width) {
+      videoEl.width = /** @type {string} */ videoEl.videoWidth;
+    }
+    if (!videoEl.height) {
+      videoEl.height = /** @type {string} */ videoEl.videoHeight;
+    }
 
     // Then, we calculate apparent video size to avoid passing out of bound values to canvas.drawImage().
     if (videoEl.videoWidth / videoEl.videoHeight > videoEl.width / videoEl.height) {
-      _width = /** @type {number} */ videoEl.width;
-      _height = videoEl.videoHeight / videoEl.videoWidth * videoEl.width;
+      width = /** @type {number} */ videoEl.width;
+      height = videoEl.videoHeight / videoEl.videoWidth * videoEl.width;
     } else {
-      _width = videoEl.videoWidth / videoEl.videoHeight * videoEl.height;
-      _height = /** @type {number} */ videoEl.height;
+      width = videoEl.videoWidth / videoEl.videoHeight * videoEl.height;
+      height = /** @type {number} */ videoEl.height;
     }
 
-    _canvasA.width = _canvasB.width = _step_width;
-    _canvasA.height = _canvasB.height = _step_height;
-    //_ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
+    canvasA.width = canvasB.width = opts.step_width;
+    canvasA.height = canvasB.height = opts.step_height;
 
-    if (_debug) {
-      half_width = _width / 2;
-      half_height = _height / 2;
-    }
-
-    videoEl.removeEventListener('durationchange', getVideoData, false);
-  };
-
-  /**
-   * Initialize values.
-   * @private
-   */
-  var init = function() {
-    // Options.
-    options = options || {};
-
-    if (options['mode'] && options['mode'] === 'PlaybackMode') {
-      _mode = /** @type {string} */ options['mode'];
-    }
-
-    if (options['step_width'] && options['step_height']) {
-      _step_width = parseInt(options['step_width'], 10);
-      _step_height = parseInt(options['step_height'], 10);
-    } else if (options['step']) {
-      _step_width = _step_height = parseInt(options['step'], 10);
-    }
-
-    if (options['minSceneDuration']) {
-      _minSceneDuration = parseFloat(options['minSceneDuration']);
-    }
-
-    if (options['threshold']) {
-      _threshold = parseFloat(options['threshold']);
-    }
-
-    if (DEBUG && options['debug']) {
-      _debug = Boolean(options['debug']);
-    }
-
-    _lastCurrentTime = _minSceneDuration;
-
-    // _threshold is set between 0 and maxDiff100 interval to save calculations later.
-    _threshold = _threshold * maxDiff100;
     // The number of pixels of resized frames. Used to speed up average calculation.
-    _step_sq = _step_width * _step_height;
-    _step_sq_plus = (_step_sq + 1) / 2 - 1;
+    var _step_sq = opts.step_width * opts.step_height;
 
-    // Debug
-    _debugContainer = document.getElementById('__scd-debug');
-    if (_debug && !_debugContainer) {
-      _debugContainer = document.createElement('div');
-      _debugContainer.id = '__scd-debug';
-      (document.body || document.getElementsByTagName('body')[0]).appendChild(_debugContainer);
+    canvasContextImageDataLength = _step_sq * 4;
+
+    debugContainer = document.getElementById('__scd-debug');
+    if (DEBUG && opts.debug && !debugContainer) {
+      debugContainer = document.createElement('div');
+      debugContainer.id = '__scd-debug';
+      (document.body || document.getElementsByTagName('body')[0]).appendChild(debugContainer);
     }
 
-    // videoEl.HAVE_FUTURE_DATA = 3
-    if (videoEl.readyState < 3) {
-      // We don't have enough data, so we'll initialize values when avaiable.
-      videoEl.addEventListener('durationchange', getVideoData, false);
-    } else {
-      // The metadata is already loaded.
-      getVideoData();
-    }
-
-    /**
-     * Launch the scene detection process.
-     */
-    Scd.prototype['start'] = (_mode === 'FastForwardMode') ? function() {
+    // Launch the scene detection process differently depending on the mode.
+    _start = (opts.mode === 'FastForwardMode') ? function() {
       // Fast forward mode.
-      if (_stop) {
+      if (stop) {
         return;
       }
 
       // Remove controls from video during process.
       videoEl.controls = false;
 
-      videoEl.currentTime = _currentTime;
+      videoEl.currentTime = currentTime;
       videoEl.addEventListener('seeked', fastForwardModeEvent, false);
 
       detectSceneChange();
     } : function() {
       // Playback mode.
-      if (_stop) {
+      if (stop) {
         return;
       }
 
@@ -335,130 +270,100 @@ var Scd = function(videoEl, options, callback) {
       videoEl.play();
     };
 
-    var getMedianBody = 'a.sort(function(a,b){return a-b});';
-    if ((_step_sq % 2) == 0) {
-      getMedianBody += 'return a[' + (_step_sq / 2) + ']';
-    } else {
-      getMedianBody += 'return (a[' + ((_step_sq / 2) - 0.5) + ']+a[' + ((_step_sq / 2) + 0.5) + '])/2';
-    }
+    /**
+     * Return the median value from an array.
+     * @param {Array.<number>} a An array of numbers.
+     * @return {number}
+     */
+    getMedian = new Function('a', 'a.sort(function(a,b){return a-b});' +
+        ((_step_sq % 2) ?
+        'return a[' + ((_step_sq / 2) - 0.5) + ']' :
+        'return(a[' + ((_step_sq / 2) - 1) + ']+a[' + (_step_sq / 2) + '])/2')
+        );
 
-    getMedian = new Function('a', getMedianBody);
-  };
+    videoEl.removeEventListener('durationchange', init, false);
+  }
 
   /**
    * Function triggered by seeked event on FastForwardMode.
    * @this {HTMLVideoElement}
-   * @private
    */
-  var fastForwardModeEvent = function() {
-    detectSceneChange();
-
-    _currentTime += _minSceneDuration;
-    this.currentTime = _currentTime;
-  };
-
-  /**
-   * Function triggered by timeupdate event on PlaybackMode.
-   * @this {HTMLVideoElement}
-   * @private
-   */
-  var playbackModeEvent = function() {
-    if (this.currentTime - _lastCurrentTime >= _minSceneDuration) {
-      _currentTime = this.currentTime;
-      detectSceneChange();
-
-      _lastCurrentTime = this.currentTime;
-    }
-  };
-
-  /** Function called when video ends.
-   * @type {function()}
-   * @private
-   */
-  var videoEndedEvent = function() {
-    if (callback) {
-      callback(that['sceneTimecodes']);
-    }
-    that['stop']();
-  };
-
-  /**
-   * Determine if a scene change occurred between last and current playback time.
-   * @private
-   */
-  var detectSceneChange = function() {
-    if (_stop) {
-      return;
-    }
-
+  function fastForwardModeEvent() {
     // @fixme: Bug on Opera. duration is not always defined.
-    if (_mode === 'FastForwardMode' && (videoEl.ended || _currentTime > videoEl.duration)) {
+    if (videoEl.ended || currentTime > videoEl.duration) {
       videoEndedEvent();
       return;
     }
 
-    _ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
-    var diff = computeDifferences(_ctxA, _ctxB);
+    detectSceneChange();
 
-    if (diff[0] > _threshold) {
+    currentTime += opts.minSceneDuration;
+    this.currentTime = currentTime;
+  }
+
+  /**
+   * Function triggered by timeupdate event on PlaybackMode.
+   * @this {HTMLVideoElement}
+   */
+  function playbackModeEvent() {
+    if (this.currentTime - lastCurrentTime >= opts.minSceneDuration) {
+      currentTime = this.currentTime;
+      detectSceneChange();
+
+      lastCurrentTime = this.currentTime;
+    }
+  }
+
+  /**
+   * Determine if a scene change occurred between last and current playback time.
+   */
+  function detectSceneChange() {
+    ctxA.drawImage(videoEl, 0, 0, width, height, 0, 0, opts.step_width, opts.step_height);
+    var diff = computeDifferences(ctxA, ctxB);
+
+    if (diff > opts.threshold) {
       // Trigger a `scenechange` event.
       var _sceneChangeEvent = document.createEvent('Event');
       _sceneChangeEvent.initEvent('scenechange', true, true);
       videoEl.dispatchEvent(_sceneChangeEvent);
 
-      that['sceneTimecodes'].push(_currentTime);
-      if (_debug) {
+      sceneTimecodes.push(currentTime);
+      if (DEBUG && opts.debug) {
         var /** @type {Element} */ tmpContainer = document.createElement('div'),
             /** @type {HTMLCanvasElement} */ tmpCanvasA = createCanvas();
-        tmpCanvasA.width = half_width;
-        tmpCanvasA.height = half_height;
-        tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight, 0, 0, half_width, half_height);
-        tmpContainer.appendChild(document.createTextNode(formatTime(_currentTime)));
+        tmpCanvasA.width = width / 2;
+        tmpCanvasA.height = height / 2;
+        tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight, 0, 0, width / 2, height / 2);
+        tmpContainer.appendChild(document.createTextNode(formatTime(currentTime)));
         tmpContainer.appendChild(document.createElement('br'));
         tmpContainer.appendChild(tmpCanvasA);
         tmpContainer.appendChild(document.createElement('br'));
-        tmpContainer.appendChild(document.createTextNode('med: ' + Math.round(diff[0] / maxDiff100) + '%'));
-        _debugContainer.appendChild(tmpContainer);
+        tmpContainer.appendChild(document.createTextNode('med: ' + Math.round(diff / MAX_DIFF_100) + '%'));
+        debugContainer.appendChild(tmpContainer);
       }
     }
 
-    _ctxB.drawImage(_canvasA, 0, 0, _step_width, _step_height, 0, 0, _step_width, _step_height);
-  };
+    ctxB.drawImage(canvasA, 0, 0, opts.step_width, opts.step_height, 0, 0, opts.step_width, opts.step_height);
+  }
 
   /**
    * Return various statistics about zone differences of 2 frames.
-   * Debug mode computes and returns more data.
    * @param {Object} ctxA The canvas context of image 1.
    * @param {Object} ctxB The canvas context of image 2.
    * @return {Array.<number>} Various statistics about input image differences.
-   * @private
    */
-  var computeDifferences = function(ctxA, ctxB) {
+  function computeDifferences(ctxA, ctxB) {
     var /** @type {Array.<number>} */ diff = [],
-        /** @type {Array.<number>} */ colorsA = ctxA.getImageData(0, 0, _step_width, _step_height).data,
-        /** @type {Array.<number>} */ colorsB = ctxB.getImageData(0, 0, _step_width, _step_height).data,
-        /** @type {number} */ i = colorsA.length,
-        /** @type {number} */ max,
-        /** @type {number} */ avg,
-        /** @type {number} */ med,
-        /** @type {number} */ min;
+        /** @type {Array.<number>} */ colorsA = ctxA.getImageData(0, 0, opts.step_width, opts.step_height).data,
+        /** @type {Array.<number>} */ colorsB = ctxB.getImageData(0, 0, opts.step_width, opts.step_height).data,
+        /** @type {number} */ i = 0;
 
-    do {
-      diff.push(getColorDistance(colorsA[i - 4], colorsA[i + (1 - 4)], colorsA[i + (2 - 4)], colorsB[i - 4], colorsB[i + (1 - 4)], colorsB[i + (2 - 4)]));
-    } while (i = i - 4);
-
-    med = getMedian(diff);
-    if (_debug) {
-      // When debug is on, full data are computed and returned...
-      //avg = getAverage(diff);
-      //max = getMaxOfArray(diff);
-      //min = getMinOfArray(diff);
-      return [med, avg, max, min];
-    } else {
-      // Otherwise, only the median value is returned.
-      return [med];
+    for (; i < canvasContextImageDataLength; i = i + 4) {
+      diff.push(getColorDistance(colorsA[i], colorsA[i + 1], colorsA[i + 2], colorsB[i], colorsB[i + 1], colorsB[i + 2]));
     }
-  };
+
+    return getMedian(diff);
+  }
 
   /**
    * Calculates the distance between 2 colors RGB compounds.
@@ -470,87 +375,62 @@ var Scd = function(videoEl, options, callback) {
    * @param {number} BB Blue compound value of color B.
    * @return {number} The distance.
    */
-  var getColorDistance = function(RA, GA, BA, RB, GB, BB) {
-    return Math.sqrt(Math.pow(RA - RB, 2) + Math.pow(GA - GB, 2) + Math.pow(BA - BB, 2));
-    //return Math.sqrt((RA - RB) * (RA - RB) + (GA - GB) * (GA - GB) + (BA - BB) * (BA - BB));
-  };
+  function getColorDistance(RA, GA, BA, RB, GB, BB) {
+    //return Math.sqrt(Math.pow(RA - RB, 2) + Math.pow(GA - GB, 2) + Math.pow(BA - BB, 2));
+    return Math.sqrt((RA - RB) * (RA - RB) + (GA - GB) * (GA - GB) + (BA - BB) * (BA - BB));
+  }
 
   /**
-   * Calculates the maximum value of an array.
-   * @param {Array.<number>} numArray An array of values.
-   * @return {number} The maximum value.
+   * Function called when video ends.
    */
-  var getMaxOfArray = function(numArray) {
-    return Math.max.apply(null, numArray);
-  };
-
-  /**
-   * Calculates the minimum value of an array.
-   * @param {Array.<number>} numArray An array of values.
-   * @return {number} The minimum value.
-   */
-  var getMinOfArray = function(numArray) {
-    return Math.min.apply(null, numArray);
-  };
-
-  /**
-   * Calculates the average value of an array.
-   * @param {Array.<number>} numArray An array of values.
-   * @return {number} The average value.
-   */
-  var getAverage = function(numArray) {
-    return numArray.reduce(function(a, b) {
-      return a + b;
-    }) / _step_sq;
-  };
-
-  /**
-   * Calculates the median value of an array.
-   * @param {Array.<number>} numArray An array of values.
-   * @return {number} The median value.
-   * @private
-   */
-  var getMedian;
-
-  init();
+  function videoEndedEvent() {
+    if (callback) {
+      callback(sceneTimecodes);
+    }
+    _stop();
+  }
 
   /**
    * Temporary halt the scene detection process. Use Scd.start() again to resume process.
    */
-  Scd.prototype['pause'] = function() {
-    if (_stop) {
+  function pause() {
+    if (stop) {
       return;
     }
 
-    if (_mode === 'FastForwardMode') {
+    if (opts.mode === 'FastForwardMode') {
       // Restore video element controls to its original state.
-      videoEl.controls = _controls;
+      videoEl.controls = controls;
       videoEl.removeEventListener('seeked', fastForwardModeEvent, false);
     }
     videoEl.pause();
-  };
+  }
 
   /**
    * Cancel the scene detection process.
    */
-  Scd.prototype['stop'] = function() {
-    that['pause']();
+  function _stop() {
+    pause();
 
     // Remove event listeners.
-    if (_mode === 'FastForwardMode') {
+    if (opts.mode === 'FastForwardMode') {
       videoEl.removeEventListener('seeked', fastForwardModeEvent, false);
 
       // Restore video element controls to its original state.
-      videoEl.controls = _controls;
+      videoEl.controls = controls;
     } else {
       videoEl.removeEventListener('timeupdate', playbackModeEvent, false);
       videoEl.removeEventListener('ended', videoEndedEvent, false);
     }
 
-    _stop = true;
-  };
+    stop = true;
+  }
 
-  // Helpers
+  /**
+   * Return a human readable time from a number of seconds.
+   * @param {number} num A duration in seconds.
+   * @return {string} A string in the form of `hh:mm:ss.ss`.
+   */
   function formatTime(num) {
     var hours = Math.floor(num / 3600);
     var minutes = Math.floor((num - (hours * 3600)) / 60);
@@ -564,12 +444,13 @@ var Scd = function(videoEl, options, callback) {
       seconds = '0' + seconds;
     return hours + ':' + minutes + ':' + seconds;
   }
-};
 
+  return {
+    start: function() {
+      _start();
+    },
+    pause: pause,
+    stop: _stop
+  };
 
-/**
- * Contains detected scene changes timecodes.
- * @type {Array.<number>}
- * @public
- */
-Scd.prototype['sceneTimecodes'] = [];
+}

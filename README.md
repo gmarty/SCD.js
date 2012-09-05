@@ -8,7 +8,7 @@ Try it here: http://gmarty.github.com/SCD.js/
 
 Call `Scd()` passing it an HTML video element (`videoEl` here):
 ```Javascript
-new Scd(videoEl);
+Scd(videoEl);
 videoEl.play(); // Play the video programatically
 ```
 
@@ -23,7 +23,7 @@ videoEl.addEventListener('scenechange', function(e) {
 
 To specify particular settings, you can pass an object of optional parameters:
 ```Javascript
-new Scd(videoEl, {
+Scd(videoEl, {
   mode: 'PlaybackMode',
   step_width: 50,
   step_height: 37,
@@ -53,7 +53,7 @@ For black and white videos you'll probably want to lower this value to about 0.1
 
 The constructor accepts a third argument which is a callback function called at the end of the video:
 ```Javascript
-new Scd(videoEl, {
+Scd(videoEl, {
   mode: 'PlaybackMode',
 }, function(sceneTimecodes){
   console.log(sceneTimecodes.join(', '));

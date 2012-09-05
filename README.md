@@ -2,7 +2,7 @@
 
 Pixel based video scene change detection in JavaScript.
 
-Base video scene (or shot) change detection written in JavaScript.
+Try it here: http://gmarty.github.com/SCD.js/
 
 ## How to make it work?
 

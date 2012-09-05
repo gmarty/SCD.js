@@ -286,10 +286,11 @@ var Scd = function(videoEl, options, callback) {
     _step_sq_plus = (_step_sq + 1) / 2 - 1;
 
     // Debug
-    if (_debug) {
+    _debugContainer = document.getElementById('__scd-debug');
+    if (_debug && !_debugContainer) {
       _debugContainer = document.createElement('div');
-      _debugContainer.className = 'scd-debug';
-      document.getElementsByTagName('body')[0].appendChild(_debugContainer);
+      _debugContainer.id = '__scd-debug';
+      (document.body || document.getElementsByTagName('body')[0]).appendChild(_debugContainer);
     }
 
     // videoEl.HAVE_FUTURE_DATA = 3

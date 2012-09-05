@@ -150,7 +150,8 @@ function $Scd$$($videoEl$$, $getMedianBody$$inline_14_options$$2$$, $callback$$3
   $_lastCurrentTime$$ = $_minSceneDuration$$;
   $_threshold$$ *= $maxDiff100$$;
   $_step_sq$$ = $_step_width$$ * $_step_height$$;
-  $_debug$$ && ($_debugContainer$$ = document.createElement("div"), $_debugContainer$$.className = "scd-debug", document.getElementsByTagName("body")[0].appendChild($_debugContainer$$));
+  $_debugContainer$$ = document.getElementById("__scd-debug");
+  $_debug$$ && !$_debugContainer$$ && ($_debugContainer$$ = document.createElement("div"), $_debugContainer$$.id = "__scd-debug", (document.body || document.getElementsByTagName("body")[0]).appendChild($_debugContainer$$));
   3 > $videoEl$$.readyState ? $videoEl$$.addEventListener("durationchange", $getVideoData$$, $JSCompiler_alias_FALSE$$) : $getVideoData$$();
   $Scd$$.prototype.start = "FastForwardMode" === $_mode$$ ? function() {
     if(!$_stop$$) {

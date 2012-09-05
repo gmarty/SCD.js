@@ -75,8 +75,8 @@ var scd = new Scd(video, {
 		step_width: 50,
 		step_height: 37,
 		debug: 1
-	}, function(){
-    console.log(scd.sceneTimecodes.join(', '));
+	}, function(sceneTimecodes){
+    console.log(sceneTimecodes.join(', '));
 });
 
 video.addEventListener('scenechange', function(e) {

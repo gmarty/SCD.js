@@ -377,7 +377,7 @@ var Scd = function(videoEl, options, callback) {
    */
   var videoEndedEvent = function() {
     if (callback) {
-      callback();
+      callback(that['sceneTimecodes']);
     }
     that['stop']();
   };

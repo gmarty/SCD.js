@@ -55,7 +55,7 @@ var Scd = function(videoEl, options, callback) {
   var that = this;
 
   /**
-   * Default mode is FastForward. Playback mode is used on browsers that don't support setting current playback time to sub seconds (e.g. Opera).
+   * Default mode is FastForward.
    * @type {string}
    * @private
    */

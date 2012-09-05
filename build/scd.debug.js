@@ -102,7 +102,7 @@ function $Scd$$($videoEl$$, $getMedianBody$$inline_14_options$$2$$, $callback$$3
         if($diff_diff$$inline_5_min$$inline_12$$[0] > $_threshold$$ && ($_events$$.$emit$("scenecut"), $that$$.sceneTimecodes.push($_currentTime$$), $_debug$$)) {
           var $colorsA$$inline_6_max$$inline_9_tmpContainer$$ = document.createElement("div"), $avg$$inline_10_colorsB$$inline_7_tmpCanvasA$$ = document.createElement("canvas"), $half_width_i$$inline_8_med$$inline_11$$ = $avg$$inline_10_colorsB$$inline_7_tmpCanvasA$$.width = $_width$$ / 2, $half_height$$ = $avg$$inline_10_colorsB$$inline_7_tmpCanvasA$$.height = $_height$$ / 2;
           $avg$$inline_10_colorsB$$inline_7_tmpCanvasA$$.getContext("2d").drawImage($videoEl$$, 0, 0, $_width$$, $_height$$, 0, 0, $half_width_i$$inline_8_med$$inline_11$$, $half_height$$);
-          $colorsA$$inline_6_max$$inline_9_tmpContainer$$.appendChild(document.createTextNode("@ " + $_currentTime$$));
+          $colorsA$$inline_6_max$$inline_9_tmpContainer$$.appendChild(document.createTextNode("@ " + $_currentTime$$.toFixed(4)));
           $colorsA$$inline_6_max$$inline_9_tmpContainer$$.appendChild(document.createElement("br"));
           $colorsA$$inline_6_max$$inline_9_tmpContainer$$.appendChild($avg$$inline_10_colorsB$$inline_7_tmpCanvasA$$);
           $colorsA$$inline_6_max$$inline_9_tmpContainer$$.appendChild(document.createElement("br"));

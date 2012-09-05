@@ -411,7 +411,7 @@ var Scd = function(videoEl, options, callback) {
             /** @type {number} */ half_width = tmpCanvasA.width = _width / 2,
             /** @type {number} */ half_height = tmpCanvasA.height = _height / 2;
         tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, _width, _height, 0, 0, half_width, half_height);
-        tmpContainer.appendChild(document.createTextNode('@ ' + _currentTime));
+        tmpContainer.appendChild(document.createTextNode('@ ' + _currentTime.toFixed(4)));
         tmpContainer.appendChild(document.createElement('br'));
         tmpContainer.appendChild(tmpCanvasA);
         tmpContainer.appendChild(document.createElement('br'));

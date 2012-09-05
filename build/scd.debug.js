@@ -110,8 +110,8 @@ function $Scd$$($videoEl$$, $_step_sq_options$$2$$, $callback$$32$$) {
       $videoEl$$.play()
     }
   };
-  var $getMedianBody$$inline_14$$ = "numArray.sort(function(a,b){return a-b});";
-  $getMedian$$ = new Function("numArray", 0 == $_step_sq_options$$2$$ % 2 ? $getMedianBody$$inline_14$$ + ("return numArray[" + $_step_sq_options$$2$$ / 2 + "]") : $getMedianBody$$inline_14$$ + ("return (numArray[" + ($_step_sq_options$$2$$ / 2 - 0.5) + "]+numArray[" + ($_step_sq_options$$2$$ / 2 + 0.5) + "])/2"));
+  var $getMedianBody$$inline_14$$ = "a.sort(function(a,b){return a-b});";
+  $getMedian$$ = new Function("a", 0 == $_step_sq_options$$2$$ % 2 ? $getMedianBody$$inline_14$$ + ("return a[" + $_step_sq_options$$2$$ / 2 + "]") : $getMedianBody$$inline_14$$ + ("return (a[" + ($_step_sq_options$$2$$ / 2 - 0.5) + "]+a[" + ($_step_sq_options$$2$$ / 2 + 0.5) + "])/2"));
   $Scd$$.prototype.pause = function $$Scd$$$$pause$() {
     if(!$_stop$$) {
       if($_mode$$ === "FastForwardMode") {

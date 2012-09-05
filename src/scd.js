@@ -335,14 +335,14 @@ var Scd = function(videoEl, options, callback) {
       videoEl.play();
     };
 
-    var getMedianBody = 'numArray.sort(function(a,b){return a-b});';
+    var getMedianBody = 'a.sort(function(a,b){return a-b});';
     if ((_step_sq % 2) == 0) {
-      getMedianBody += 'return numArray[' + (_step_sq / 2) + ']';
+      getMedianBody += 'return a[' + (_step_sq / 2) + ']';
     } else {
-      getMedianBody += 'return (numArray[' + ((_step_sq / 2) - 0.5) + ']+numArray[' + ((_step_sq / 2) + 0.5) + '])/2';
+      getMedianBody += 'return (a[' + ((_step_sq / 2) - 0.5) + ']+a[' + ((_step_sq / 2) + 0.5) + '])/2';
     }
 
-    getMedian = new Function('numArray', getMedianBody);
+    getMedian = new Function('a', getMedianBody);
   };
 
   /**

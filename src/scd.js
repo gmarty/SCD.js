@@ -212,6 +212,9 @@ var Scd = function(videoEl, options, callback) {
    */
   var _debugContainer;
 
+  var half_width;
+  var half_height;
+
   /**
    * The property holding the event emitter.
    * @type {Object}
@@ -242,6 +245,11 @@ var Scd = function(videoEl, options, callback) {
     _canvasA.width = _canvasB.width = _step_width;
     _canvasA.height = _canvasB.height = _step_height;
     //_ctxA.drawImage(videoEl, 0, 0, _width, _height, 0, 0, _step_width, _step_height);
+
+    if (_debug) {
+      half_width = _width / 2;
+      half_height = _height / 2;
+    }
 
     videoEl.removeEventListener('durationchange', getVideoData, false);
   };
@@ -407,10 +415,10 @@ var Scd = function(videoEl, options, callback) {
       that['sceneTimecodes'].push(_currentTime);
       if (_debug) {
         var /** @type {Element} */ tmpContainer = document.createElement('div'),
-            /** @type {HTMLCanvasElement} */ tmpCanvasA = createCanvas(),
-            /** @type {number} */ half_width = tmpCanvasA.width = _width / 2,
-            /** @type {number} */ half_height = tmpCanvasA.height = _height / 2;
-        tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, _width, _height, 0, 0, half_width, half_height);
+            /** @type {HTMLCanvasElement} */ tmpCanvasA = createCanvas();
+        tmpCanvasA.width = half_width;
+        tmpCanvasA.height = half_height;
+        tmpCanvasA.getContext('2d').drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight, 0, 0, half_width, half_height);
         tmpContainer.appendChild(document.createTextNode('@ ' + _currentTime.toFixed(4)));
         tmpContainer.appendChild(document.createElement('br'));
         tmpContainer.appendChild(tmpCanvasA);

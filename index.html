@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pixel based video scene change detection in JavaScript</title>
+<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.0/css/bootstrap.min.css" rel="stylesheet">
+<style>
+video {
+  margin-bottom: 15px;
+}
+.container {
+  padding-top: 20px;
+}
+#__scd-debug div {
+  float:left;
+  text-align:center;
+  display:inline;
+  margin: 0 46px 30px 0;
+}
+#__scd-debug canvas {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+}
+#footer-right {
+  margin-top: -30px;
+  text-align: right;
+}
+</style>
+<body>
+<a href="https://github.com/gmarty/SCD.js"><img style="position:absolute;top:0;right:0;border:0" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+<div class="container">
+  <div class="row">
+    <div class="span3">
+      <div class="well">
+        <video id="video" width="170" height="127" class="img-polaroid">
+          <source src="video/video.webm" type='video/webm; codecs="vp8, vorbis"'>
+        </video>
+        <div>
+          <button id="start" class="btn btn-primary btn-small"><i class="icon-play icon-white"></i>Start</button>
+          <button id="pause" class="btn btn-mini"><i class="icon-pause"></i>Pause</button>
+          <button id="stop" class="btn btn-mini"><i class="icon-stop"></i>Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="span9">
+      <div class="hero-unit">
+        <h1>Cut detection</h1>
+        <p>Pixel based video scene change detection in JavaScript</p>
+      </div>
+      <div>
+        <h2>Detected scenes</h2>
+        <div id="__scd-debug"><p>Click the <i class="icon-play"></i>Start button on the left.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <footer>
+    <p>&copy; 2011-2012 <a href="https://github.com/gmarty/SCD.js">Guillaume Marty</a></p>
+    <p id="footer-right"><a href="https://twitter.com/g_marty" class="twitter-follow-button" data-show-count="false" data-lang="en">Follow @g_marty</a></p>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </footer>
+
+</div>
+
+<script src="build/scd.debug.js"></script>
+<script>
+var video = document.getElementById("video");
+var scd = new Scd(video, {
+		mode: 'PlaybackMode',
+		step_width: 50,
+		step_height: 37,
+		debug: 1
+	}, function(){
+    console.log(scd.sceneTimecodes.join(", "));
+});
+
+video.addEventListener('scenechange', function(e) {
+  console.log('scenechange', e.timeStamp);
+});
+
+// Attach click events to buttons.
+document.getElementById('start').addEventListener('click', function() {
+  var debugContainer = document.getElementById("__scd-debug");
+  while(debugContainer.firstChild)
+    debugContainer.removeChild(debugContainer.firstChild);
+});
+
+["start", "pause", "stop"].forEach(function(element) {
+  document.getElementById(element).addEventListener('click', scd[element]);
+});
+</script>
+</body>
+</html>

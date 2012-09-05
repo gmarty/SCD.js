@@ -1,0 +1,5 @@
+.idea/
+closure-compiler/*
+samples/*
+node_modules/
+*.report.txt

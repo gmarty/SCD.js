@@ -45,19 +45,6 @@ function Scd(videoEl, options, callback) {
   }
 
   /**
-   * An object for settings.
-   */
-  var opts = {
-    mode: 'FastForwardMode',
-    step: 0,
-    step_width: 50,
-    step_height: 50,
-    minSceneDuration: 0.25,
-    threshold: 110.4182, // 25 * Math.sqrt(255 * 255 * 3) / 100,
-    debug: false
-  };
-
-  /**
    * Maximum color difference possible / 100. Used to speed up calculations on debug.
    * @const
    */
@@ -160,6 +147,19 @@ function Scd(videoEl, options, callback) {
    * @type {Array}
    */
   var sceneTimecodes = [];
+
+  /**
+   * An object for settings.
+   */
+  var opts = {
+    mode: 'FastForwardMode',
+    step: 0,
+    step_width: 50,
+    step_height: 50,
+    minSceneDuration: 0.25,
+    threshold: 110.4182, // 25 * Math.sqrt(255 * 255 * 3) / 100,
+    debug: false
+  };
 
   // HTMLVideoElement.HAVE_FUTURE_DATA = 3
   if (videoEl.readyState < 3) {

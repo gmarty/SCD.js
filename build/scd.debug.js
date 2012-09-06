@@ -127,13 +127,13 @@ window.Scd = function Scd($videoEl$$, $options$$2$$, $callback$$32$$) {
   if(!$videoEl$$ || 0 > $videoEl$$.constructor.toString().indexOf("HTMLVideoElement")) {
     throw Error("Input element is not a video element.");
   }
+  var $width$$12$$ = 0, $height$$11$$ = 0, $controls$$ = $videoEl$$.controls, $currentTime$$ = 0, $lastCurrentTime$$ = 0, $canvasA$$ = document.createElement("canvas"), $canvasB$$ = document.createElement("canvas"), $ctxA$$ = $canvasA$$.getContext("2d"), $ctxB$$ = $canvasB$$.getContext("2d"), $stop$$ = $JSCompiler_alias_FALSE$$, $canvasContextImageDataLength$$, $debugContainer$$, $_start$$, $getMedian$$, $sceneTimecodes$$ = [];
   $JSCompiler_object_inline_mode_0$$ = "FastForwardMode";
   $JSCompiler_object_inline_step_1$$ = 0;
   $JSCompiler_object_inline_step_height_3$$ = $JSCompiler_object_inline_step_width_2$$ = 50;
   $JSCompiler_object_inline_minSceneDuration_4$$ = 0.25;
   $JSCompiler_object_inline_threshold_5$$ = 110.4182;
   $JSCompiler_object_inline_debug_6$$ = $JSCompiler_alias_FALSE$$;
-  var $width$$12$$ = 0, $height$$11$$ = 0, $controls$$ = $videoEl$$.controls, $currentTime$$ = 0, $lastCurrentTime$$ = 0, $canvasA$$ = document.createElement("canvas"), $canvasB$$ = document.createElement("canvas"), $ctxA$$ = $canvasA$$.getContext("2d"), $ctxB$$ = $canvasB$$.getContext("2d"), $stop$$ = $JSCompiler_alias_FALSE$$, $canvasContextImageDataLength$$, $debugContainer$$, $_start$$, $getMedian$$, $sceneTimecodes$$ = [];
   3 > $videoEl$$.readyState ? $videoEl$$.addEventListener("durationchange", $init$$, $JSCompiler_alias_FALSE$$) : $init$$();
   return{start:function() {
     $_start$$()

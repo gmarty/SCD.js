@@ -446,6 +446,7 @@ function Scd(videoEl, options, callback) {
   }
 
   return {
+    // _start is set after initialization, we can't just return _start().
     start: function() {
       _start();
     },

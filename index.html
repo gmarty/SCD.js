@@ -70,11 +70,11 @@ video {
 <script src="build/scd.debug.js"></script>
 <script>
 var video = document.getElementById('video');
-var scd = new Scd(video, {
+var scd = Scd(video, {
 		mode: 'PlaybackMode',
 		step_width: 50,
 		step_height: 37,
-		debug: 1
+		debug: true
 	}, function(sceneTimecodes){
     console.log(sceneTimecodes.join(', '));
 });

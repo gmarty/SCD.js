@@ -2,17 +2,20 @@
 
 Pixel based video scene change detection in JavaScript.
 
+Fast, lightweight (only 1.4k gzipped) and easy to use.
+
 Try it here: http://gmarty.github.com/SCD.js/
 
 ## How to make it work?
 
-Call `Scd()` passing it an HTML video element (`videoEl` here):
+Call `Scd()` passing it an HTML video element:
 ```Javascript
+var videoEl = document.getElementById('myVideo');
 Scd(videoEl);
-videoEl.play(); // Play the video programatically
+videoEl.play(); // Start the video
 ```
 
-When a new cut change is detected, the video element will fire a `scenechange` event. You can easily listen to these events:
+When a new cut change is detected, the video element will fire a `scenechange` event that you can easily listen to:
 ```Javascript
 videoEl.addEventListener('scenechange', function(e) {
   console.log('New scene change detected at', e.timeStamp);
@@ -21,19 +24,19 @@ videoEl.addEventListener('scenechange', function(e) {
 
 ## How to configure it?
 
-To specify particular settings, you can pass an object of optional parameters:
+To specify particular settings, you can pass an object of parameters:
 ```Javascript
 Scd(videoEl, {
   mode: 'PlaybackMode',
   step_width: 50,
-  step_height: 37,
+  step_height: 37
 });
 ```
 
 ### Available options
 
-`step_width` and `step_height` allow you to specify the size of the thumbnail image from which pixel differences will be computed to determine scene changes.
-If it's high, it will take more time. If it's low, it will lead in less precise results.
+`step_width` and `step_height` allow you to specify the size of the thumbnail image from which pixel differences will be computed when determining scene changes.
+If it's high, it will require more processing time. If it's low, it will lead to less precise results.
 Alternatively, you can set both width and height at a time using `step`.
 
 Scene detection can be run in 2 different modes:
@@ -42,9 +45,9 @@ Scene detection can be run in 2 different modes:
 
 `FastForwardMode` is the default.
 
-You can adjust the minimum time frame in which a scene change cannot happen by giving a value in seconds to `minSceneDuration`. By the default, it is 0.25.
-If your video is likely to have long fading transitions of let's say 0.75 seconds, you should set `minSceneDuration` to at least 0.75.
-Otherwise, wrong scene changes might be detected during the fading.
+You can adjust the minimum time frame in which a scene change cannot happen by giving a value in seconds to `minSceneDuration`. By default it is 0.25.
+If your video is likely to have long fading transitions of let's say 0.75 seconds, you should give `minSceneDuration` a value of at least 0.75.
+Otherwise, several scene changes might be detected during the fading.
 
 `threshold` is a number between 0 and 100 and has a default value of 25. If the difference between 2 scanned images is above `threshold`%, then a cut scene is detected.
 For black and white videos you'll probably want to lower this value to about 0.15. `threshold` is the sensitivity of the scene change detection.
@@ -59,7 +62,7 @@ Scd(videoEl, {
   console.log(sceneTimecodes.join(', '));
 });
 ```
-It returns an array containing the time codes of the scene changes relatively to the video.
+It returns an array containing the time codes in seconds of the scene changes detected relatively to the beginning of the video.
 
 ## Note
 

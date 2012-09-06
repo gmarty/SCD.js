@@ -1,6 +1,6 @@
 {
   "name": "SCD.js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Pixel based video scene change detection in JavaScript",
   "main": "",
   "scripts": {

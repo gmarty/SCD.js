@@ -38,7 +38,7 @@ window.Scd = function Scd($videoEl$$, $options$$2$$, $callback$$32$$) {
           $JSCompiler_object_inline_minSceneDuration_4$$ = +$options$$2$$[$_step_sq_k$$];
           break;
         case "threshold":
-          $JSCompiler_object_inline_threshold_5$$ = +$options$$2$$[$_step_sq_k$$] * $MAX_DIFF_100$$;
+          $JSCompiler_object_inline_threshold_5$$ = 4.4167 * +$options$$2$$[$_step_sq_k$$];
           break;
         case "debug":
           $JSCompiler_object_inline_debug_6$$ = !!$options$$2$$[$_step_sq_k$$]
@@ -104,7 +104,7 @@ window.Scd = function Scd($videoEl$$, $options$$2$$, $callback$$32$$) {
       $_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$.appendChild(document.createElement("br"));
       $_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$.appendChild($colorsB$$inline_12_ctxB$$inline_9_tmpCanvasA$$);
       $_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$.appendChild(document.createElement("br"));
-      $_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$.appendChild(document.createTextNode("med: " + Math.round($diff_diff$$inline_10$$ / $MAX_DIFF_100$$) + "%"));
+      $_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$.appendChild(document.createTextNode("med: " + Math.round($diff_diff$$inline_10$$ / 4.4167) + "%"));
       $debugContainer$$.appendChild($_sceneChangeEvent_colorsA$$inline_11_tmpContainer$$)
     }
     $ctxB$$.drawImage($canvasA$$, 0, 0, $JSCompiler_object_inline_step_width_2$$, $JSCompiler_object_inline_step_height_3$$, 0, 0, $JSCompiler_object_inline_step_width_2$$, $JSCompiler_object_inline_step_height_3$$)
@@ -127,12 +127,11 @@ window.Scd = function Scd($videoEl$$, $options$$2$$, $callback$$32$$) {
   if(!$videoEl$$ || 0 > $videoEl$$.constructor.toString().indexOf("HTMLVideoElement")) {
     throw Error("Input element is not a video element.");
   }
-  var $MAX_DIFF_100$$ = Math.sqrt(195075) / 100;
   $JSCompiler_object_inline_mode_0$$ = "FastForwardMode";
   $JSCompiler_object_inline_step_1$$ = 0;
   $JSCompiler_object_inline_step_height_3$$ = $JSCompiler_object_inline_step_width_2$$ = 50;
   $JSCompiler_object_inline_minSceneDuration_4$$ = 0.25;
-  $JSCompiler_object_inline_threshold_5$$ = 25 * $MAX_DIFF_100$$;
+  $JSCompiler_object_inline_threshold_5$$ = 110.4182;
   $JSCompiler_object_inline_debug_6$$ = $JSCompiler_alias_FALSE$$;
   var $width$$12$$ = 0, $height$$11$$ = 0, $controls$$ = $videoEl$$.controls, $currentTime$$ = 0, $lastCurrentTime$$ = 0, $canvasA$$ = document.createElement("canvas"), $canvasB$$ = document.createElement("canvas"), $ctxA$$ = $canvasA$$.getContext("2d"), $ctxB$$ = $canvasB$$.getContext("2d"), $stop$$ = $JSCompiler_alias_FALSE$$, $canvasContextImageDataLength$$, $debugContainer$$, $_start$$, $getMedian$$, $sceneTimecodes$$ = [];
   3 > $videoEl$$.readyState ? $videoEl$$.addEventListener("durationchange", $init$$, $JSCompiler_alias_FALSE$$) : $init$$();

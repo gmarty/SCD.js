@@ -45,12 +45,6 @@ function Scd(videoEl, options, callback) {
   }
 
   /**
-   * Maximum color difference possible / 100. Used to speed up calculations on debug.
-   * @const
-   */
-  var MAX_DIFF_100 = Math.sqrt(255 * 255 * 3) / 100;
-
-  /**
    * An object for settings.
    */
   var opts = {
@@ -59,9 +53,15 @@ function Scd(videoEl, options, callback) {
     step_width: 50,
     step_height: 50,
     minSceneDuration: 0.25,
-    threshold: 25 * MAX_DIFF_100,
+    threshold: 110.4182, // 25 * Math.sqrt(255 * 255 * 3) / 100,
     debug: false
   };
+
+  /**
+   * Maximum color difference possible / 100. Used to speed up calculations on debug.
+   * @const
+   */
+  var MAX_DIFF_100 = 4.4167; // Math.sqrt(255 * 255 * 3) / 100;
 
   /**
    * Video width.
